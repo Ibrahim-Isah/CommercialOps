@@ -94,13 +94,13 @@ async function searchLiveVessels(
         /* ignore */
       }
       const vessels: Vessel[] = [];
-      for (const v of acc.values()) {
+      acc.forEach((v) => {
         if (
           v.latitude === undefined ||
           v.longitude === undefined ||
           !matches(query, v)
         ) {
-          continue;
+          return;
         }
         vessels.push({
           mmsi: v.mmsi,
@@ -117,7 +117,7 @@ async function searchLiveVessels(
           lastUpdated: v.lastUpdated ?? new Date().toISOString(),
           isMock: false,
         });
-      }
+      });
       resolve(vessels);
     };
 

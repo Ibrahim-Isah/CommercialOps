@@ -110,8 +110,8 @@ async function fetchRss(): Promise<NewsItem[]> {
     })
   );
   return results
-    .filter((r): r is PromiseFulfilledResult<NewsItem[]> => r.status === "fulfilled")
-    .flatMap((r) => r.value);
+    .filter((r) => r.status === "fulfilled")
+    .flatMap((r) => (r as PromiseFulfilledResult<NewsItem[]>).value);
 }
 
 function dedupe(items: NewsItem[]): NewsItem[] {
