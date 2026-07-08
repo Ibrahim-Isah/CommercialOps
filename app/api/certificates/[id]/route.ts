@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { deleteCertificate, updateCertificate } from "@/lib/store";
+import { deleteCertificate, updateCertificate, StoreError } from "@/lib/store";
 import { withStatus } from "@/lib/certificates";
 import { parseCertificateInput } from "@/lib/validation";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+function errorResponse(e: unknown, fallback: string) {
+  const message = e instanceof StoreError ? e.message : fallback;
+  return NextResponse.json({ error: message }, { status: 500 });
+}
 
 /** PUT /api/certificates/:id — update a certificate. */
 export async function PUT(
@@ -17,7 +22,7 @@ export async function PUT(
     if ("error" in parsed) {
       return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
-    const updated = updateCertificate(params.id, parsed.data);
+    const updated = await updateCertificate(params.id, parsed.data);
     if (!updated) {
       return NextResponse.json(
         { error: "Certificate not found." },
@@ -25,11 +30,8 @@ export async function PUT(
       );
     }
     return NextResponse.json({ certificate: withStatus(updated) });
-  } catch {
-    return NextResponse.json(
-      { error: "Failed to update certificate." },
-      { status: 500 }
-    );
+  } catch (e) {
+    return errorResponse(e, "Failed to update certificate.");
   }
 }
 
@@ -39,7 +41,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const ok = deleteCertificate(params.id);
+    const ok = await deleteCertificate(params.id);
     if (!ok) {
       return NextResponse.json(
         { error: "Certificate not found." },
@@ -47,10 +49,7 @@ export async function DELETE(
       );
     }
     return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json(
-      { error: "Failed to delete certificate." },
-      { status: 500 }
-    );
+  } catch (e) {
+    return errorResponse(e, "Failed to delete certificate.");
   }
 }

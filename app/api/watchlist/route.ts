@@ -3,21 +3,24 @@ import {
   addToWatchlist,
   listWatchlist,
   removeFromWatchlist,
+  StoreError,
 } from "@/lib/store";
 import type { Vessel } from "@/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+function errorResponse(e: unknown, fallback: string) {
+  const message = e instanceof StoreError ? e.message : fallback;
+  return NextResponse.json({ error: message }, { status: 500 });
+}
+
 /** GET /api/watchlist — persisted tracked vessels. */
 export async function GET() {
   try {
-    return NextResponse.json({ vessels: listWatchlist() });
-  } catch {
-    return NextResponse.json(
-      { error: "Failed to load watchlist." },
-      { status: 500 }
-    );
+    return NextResponse.json({ vessels: await listWatchlist() });
+  } catch (e) {
+    return errorResponse(e, "Failed to load watchlist.");
   }
 }
 
@@ -32,13 +35,10 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    const vessels = addToWatchlist(vessel);
+    const vessels = await addToWatchlist(vessel);
     return NextResponse.json({ vessels });
-  } catch {
-    return NextResponse.json(
-      { error: "Failed to update watchlist." },
-      { status: 500 }
-    );
+  } catch (e) {
+    return errorResponse(e, "Failed to update watchlist.");
   }
 }
 
@@ -52,12 +52,9 @@ export async function DELETE(req: NextRequest) {
         { status: 400 }
       );
     }
-    const vessels = removeFromWatchlist(mmsi);
+    const vessels = await removeFromWatchlist(mmsi);
     return NextResponse.json({ vessels });
-  } catch {
-    return NextResponse.json(
-      { error: "Failed to update watchlist." },
-      { status: 500 }
-    );
+  } catch (e) {
+    return errorResponse(e, "Failed to update watchlist.");
   }
 }

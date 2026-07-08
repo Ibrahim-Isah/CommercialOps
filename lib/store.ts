@@ -1,154 +1,252 @@
 /**
- * Tiny JSON-file data store.
+ * Supabase-backed data store.
  *
- * We deliberately use a single JSON file instead of SQLite/better-sqlite3:
- * better-sqlite3 needs native compilation, which is a common source of install
- * friction (especially on Windows). A JSON file is zero-dependency and reliable
- * for a single-user internal tool. ALL persistence logic lives in this one
- * module, so it can be swapped for Postgres/SQLite later without touching the
- * API routes — they only call the exported functions.
+ * ALL persistence logic lives in this one module — API routes only call the
+ * exported functions, so the backing database can be swapped without touching
+ * them. Tables are defined in supabase/schema.sql (run once in the Supabase
+ * SQL editor).
  *
  * Persists: certificates and the vessel watchlist.
- * File: <project>/data/store.json (git-ignored).
+ *
+ * First run: seeds example certificates, importing any data found in the
+ * legacy JSON store (data/store.json) so nothing is lost in the migration.
  */
 import fs from "node:fs";
 import path from "node:path";
-import { randomUUID } from "node:crypto";
 import type { Certificate, CertificateInput, Vessel } from "@/types";
 import { seedCertificates } from "@/lib/mock-data";
+import { getSupabase } from "@/lib/supabase";
 
-interface StoreShape {
-  certificates: Certificate[];
-  watchlist: Vessel[];
-  seeded: boolean;
+/** Store failures whose message is safe and useful to show to the user. */
+export class StoreError extends Error {}
+
+const SEEDED_KEY = "store_seeded";
+
+interface CertificateRow {
+  id: string;
+  name: string;
+  issuing_body: string;
+  category: Certificate["category"];
+  registration_date: string;
+  expiration_date: string;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const STORE_PATH = path.join(DATA_DIR, "store.json");
-
-function emptyStore(): StoreShape {
-  return { certificates: [], watchlist: [], seeded: false };
+function rowToCertificate(row: CertificateRow): Certificate {
+  return {
+    id: row.id,
+    name: row.name,
+    issuingBody: row.issuing_body,
+    category: row.category,
+    registrationDate: row.registration_date,
+    expirationDate: row.expiration_date,
+    notes: row.notes ?? undefined,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
 }
 
-function ensureDir() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+function certificateToRow(c: Certificate): CertificateRow {
+  return {
+    id: c.id,
+    name: c.name,
+    issuing_body: c.issuingBody,
+    category: c.category,
+    registration_date: c.registrationDate,
+    expiration_date: c.expirationDate,
+    notes: c.notes ?? null,
+    created_at: c.createdAt,
+    updated_at: c.updatedAt,
+  };
+}
+
+/** Postgres "invalid input syntax" (e.g. a non-UUID id) — treat as not found. */
+function isInvalidInput(error: { code?: string }): boolean {
+  return error.code === "22P02";
+}
+
+function fail(action: string, error: { code?: string; message?: string }): never {
+  // PGRST205: PostgREST cannot find the table — the schema was never applied.
+  if (error.code === "PGRST205" || /schema cache/i.test(error.message ?? "")) {
+    throw new StoreError(
+      "Database tables are missing. Run supabase/schema.sql in the Supabase SQL editor, then try again."
+    );
   }
+  throw new StoreError(`Failed to ${action}. (${error.message ?? "unknown database error"})`);
 }
 
-function readStore(): StoreShape {
+// --- One-time seed / legacy migration ---------------------------------------
+
+/** Read the pre-Supabase JSON store, if it exists, so its data migrates over. */
+function readLegacyStore():
+  | { certificates: Certificate[]; watchlist: Vessel[] }
+  | undefined {
   try {
-    ensureDir();
-    if (!fs.existsSync(STORE_PATH)) {
-      return emptyStore();
-    }
-    const raw = fs.readFileSync(STORE_PATH, "utf-8");
-    const parsed = JSON.parse(raw) as Partial<StoreShape>;
+    const raw = fs.readFileSync(
+      path.join(process.cwd(), "data", "store.json"),
+      "utf-8"
+    );
+    const parsed = JSON.parse(raw) as {
+      certificates?: Certificate[];
+      watchlist?: Vessel[];
+    };
     return {
       certificates: parsed.certificates ?? [],
       watchlist: parsed.watchlist ?? [],
-      seeded: parsed.seeded ?? false,
     };
   } catch {
-    // Corrupt or unreadable file — fall back to empty rather than crashing.
-    return emptyStore();
+    // Missing or unreadable (e.g. read-only serverless bundle) — nothing to migrate.
+    return undefined;
   }
 }
 
-function writeStore(store: StoreShape) {
-  ensureDir();
-  fs.writeFileSync(STORE_PATH, JSON.stringify(store, null, 2), "utf-8");
-}
+const g = globalThis as unknown as { __storeSeeded?: boolean };
 
-/** Seed example certificates the first time the store is touched. */
-function getSeededStore(): StoreShape {
-  const store = readStore();
-  if (!store.seeded) {
-    store.certificates = seedCertificates();
-    store.seeded = true;
-    writeStore(store);
+/**
+ * Seed the database on first touch. The app_settings row acts as the flag;
+ * ignoreDuplicates makes the claim atomic, so concurrent first requests
+ * cannot double-seed.
+ */
+async function ensureSeeded(): Promise<void> {
+  if (g.__storeSeeded) return;
+  const sb = getSupabase();
+
+  const { data: claimed, error } = await sb
+    .from("app_settings")
+    .upsert(
+      { key: SEEDED_KEY, value: { seededAt: new Date().toISOString() } },
+      { onConflict: "key", ignoreDuplicates: true }
+    )
+    .select("key");
+  if (error) fail("initialise the database", error);
+
+  if (claimed && claimed.length > 0) {
+    // We won the first-run claim: import legacy data or the demo seeds.
+    const legacy = readLegacyStore();
+    const certs = legacy?.certificates.length
+      ? legacy.certificates
+      : seedCertificates();
+    const { error: certError } = await sb
+      .from("certificates")
+      .insert(certs.map(certificateToRow));
+    if (certError) fail("seed certificates", certError);
+
+    if (legacy?.watchlist.length) {
+      const { error: wlError } = await sb.from("watchlist").upsert(
+        legacy.watchlist.map((v) => ({ mmsi: v.mmsi, vessel: v })),
+        { onConflict: "mmsi" }
+      );
+      if (wlError) fail("migrate the watchlist", wlError);
+    }
   }
-  return store;
+  g.__storeSeeded = true;
 }
 
-// --- Certificates ----------------------------------------------------------
+// --- Certificates ------------------------------------------------------------
 
-export function listCertificates(): Certificate[] {
-  return getSeededStore().certificates;
+export async function listCertificates(): Promise<Certificate[]> {
+  await ensureSeeded();
+  const { data, error } = await getSupabase()
+    .from("certificates")
+    .select("*")
+    .order("created_at", { ascending: true });
+  if (error) fail("load certificates", error);
+  return ((data ?? []) as CertificateRow[]).map(rowToCertificate);
 }
 
-export function getCertificate(id: string): Certificate | undefined {
-  return getSeededStore().certificates.find((c) => c.id === id);
+export async function createCertificate(
+  input: CertificateInput
+): Promise<Certificate> {
+  await ensureSeeded();
+  const { data, error } = await getSupabase()
+    .from("certificates")
+    .insert({
+      name: input.name,
+      issuing_body: input.issuingBody,
+      category: input.category,
+      registration_date: input.registrationDate,
+      expiration_date: input.expirationDate,
+      notes: input.notes?.trim() || null,
+    })
+    .select("*")
+    .single();
+  if (error) fail("create the certificate", error);
+  return rowToCertificate(data as CertificateRow);
 }
 
-export function createCertificate(input: CertificateInput): Certificate {
-  const store = getSeededStore();
-  const now = new Date().toISOString();
-  const cert: Certificate = {
-    id: randomUUID(),
-    ...input,
-    notes: input.notes?.trim() || undefined,
-    createdAt: now,
-    updatedAt: now,
-  };
-  store.certificates.push(cert);
-  writeStore(store);
-  return cert;
-}
-
-export function updateCertificate(
+export async function updateCertificate(
   id: string,
   input: CertificateInput
-): Certificate | undefined {
-  const store = getSeededStore();
-  const idx = store.certificates.findIndex((c) => c.id === id);
-  if (idx === -1) return undefined;
-  const existing = store.certificates[idx];
-  const updated: Certificate = {
-    ...existing,
-    ...input,
-    notes: input.notes?.trim() || undefined,
-    updatedAt: new Date().toISOString(),
-  };
-  store.certificates[idx] = updated;
-  writeStore(store);
-  return updated;
-}
-
-export function deleteCertificate(id: string): boolean {
-  const store = getSeededStore();
-  const before = store.certificates.length;
-  store.certificates = store.certificates.filter((c) => c.id !== id);
-  if (store.certificates.length === before) return false;
-  writeStore(store);
-  return true;
-}
-
-// --- Vessel watchlist -------------------------------------------------------
-
-export function listWatchlist(): Vessel[] {
-  return getSeededStore().watchlist;
-}
-
-export function addToWatchlist(vessel: Vessel): Vessel[] {
-  const store = getSeededStore();
-  const exists = store.watchlist.some((v) => v.mmsi === vessel.mmsi);
-  if (!exists) {
-    store.watchlist.push(vessel);
-    writeStore(store);
-  } else {
-    // Refresh the stored snapshot with the latest position.
-    store.watchlist = store.watchlist.map((v) =>
-      v.mmsi === vessel.mmsi ? vessel : v
-    );
-    writeStore(store);
+): Promise<Certificate | undefined> {
+  await ensureSeeded();
+  const { data, error } = await getSupabase()
+    .from("certificates")
+    .update({
+      name: input.name,
+      issuing_body: input.issuingBody,
+      category: input.category,
+      registration_date: input.registrationDate,
+      expiration_date: input.expirationDate,
+      notes: input.notes?.trim() || null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select("*")
+    .maybeSingle();
+  if (error) {
+    if (isInvalidInput(error)) return undefined;
+    fail("update the certificate", error);
   }
-  return store.watchlist;
+  return data ? rowToCertificate(data as CertificateRow) : undefined;
 }
 
-export function removeFromWatchlist(mmsi: string): Vessel[] {
-  const store = getSeededStore();
-  store.watchlist = store.watchlist.filter((v) => v.mmsi !== mmsi);
-  writeStore(store);
-  return store.watchlist;
+export async function deleteCertificate(id: string): Promise<boolean> {
+  await ensureSeeded();
+  const { data, error } = await getSupabase()
+    .from("certificates")
+    .delete()
+    .eq("id", id)
+    .select("id");
+  if (error) {
+    if (isInvalidInput(error)) return false;
+    fail("delete the certificate", error);
+  }
+  return (data ?? []).length > 0;
+}
+
+// --- Vessel watchlist ---------------------------------------------------------
+
+export async function listWatchlist(): Promise<Vessel[]> {
+  await ensureSeeded();
+  const { data, error } = await getSupabase()
+    .from("watchlist")
+    .select("vessel")
+    .order("added_at", { ascending: true });
+  if (error) fail("load the watchlist", error);
+  return (data ?? []).map((row) => row.vessel as Vessel);
+}
+
+/** Add a vessel, or refresh the stored snapshot when it is already listed. */
+export async function addToWatchlist(vessel: Vessel): Promise<Vessel[]> {
+  await ensureSeeded();
+  const { error } = await getSupabase()
+    .from("watchlist")
+    .upsert(
+      { mmsi: vessel.mmsi, vessel, updated_at: new Date().toISOString() },
+      { onConflict: "mmsi" }
+    );
+  if (error) fail("update the watchlist", error);
+  return listWatchlist();
+}
+
+export async function removeFromWatchlist(mmsi: string): Promise<Vessel[]> {
+  await ensureSeeded();
+  const { error } = await getSupabase()
+    .from("watchlist")
+    .delete()
+    .eq("mmsi", mmsi);
+  if (error) fail("update the watchlist", error);
+  return listWatchlist();
 }
