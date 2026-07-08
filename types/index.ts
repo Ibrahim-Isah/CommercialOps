@@ -34,6 +34,14 @@ export interface Vessel {
   /** Course over ground in degrees. */
   heading: number;
   status: VesselStatus;
+  /** Radio call sign when known. */
+  callSign?: string;
+  /** Overall length in metres when known. */
+  length?: number;
+  /** Beam in metres when known. */
+  beam?: number;
+  /** Maximum static draught in metres when known. */
+  draught?: number;
   destination?: string;
   /** ETA as an ISO string when known. */
   eta?: string;

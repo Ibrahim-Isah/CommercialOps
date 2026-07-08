@@ -8,7 +8,11 @@ interface Entry<T> {
   expires: number;
 }
 
-const store = new Map<string, Entry<unknown>>();
+// Next.js bundles each route separately, so a plain module-level Map would be
+// a different instance per API route (and reset on dev hot-reload). Anchor the
+// store on globalThis so every route shares one cache.
+const g = globalThis as unknown as { __ttlCache?: Map<string, Entry<unknown>> };
+const store = (g.__ttlCache ??= new Map<string, Entry<unknown>>());
 
 export function getCached<T>(key: string): T | undefined {
   const entry = store.get(key);

@@ -1,20 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import { searchVessels } from "@/lib/vessels";
+import { getFleet, matchesVesselQuery } from "@/lib/vessels";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// The live AIS lookup listens on a WebSocket for several seconds.
+// The live AIS collection listens on a WebSocket for several seconds.
 export const maxDuration = 30;
 
-/** GET /api/vessels?q=name|imo|mmsi — search live AIS or mock fleet. */
+/**
+ * GET /api/vessels?q=&refresh=1 — browsable fleet list (cached live AIS
+ * snapshot or the mock fleet), optionally filtered by name/IMO/MMSI/etc.
+ */
 export async function GET(req: NextRequest) {
   try {
     const q = req.nextUrl.searchParams.get("q") ?? "";
-    const { vessels, isMock } = await searchVessels(q);
-    return NextResponse.json({ vessels, isMock });
+    const forceRefresh = req.nextUrl.searchParams.get("refresh") === "1";
+    const { vessels, isMock } = await getFleet({ forceRefresh });
+    const filtered = q ? vessels.filter((v) => matchesVesselQuery(q, v)) : vessels;
+    return NextResponse.json({ vessels: filtered, isMock });
   } catch {
     return NextResponse.json(
-      { error: "Failed to search vessels." },
+      { error: "Failed to load vessels." },
       { status: 500 }
     );
   }

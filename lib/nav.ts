@@ -23,10 +23,10 @@ export const NAV_ITEMS: NavItem[] = [
     description: "Overview of key signals",
   },
   {
-    label: "Vessel Tracking",
+    label: "Vessels",
     href: "/vessels",
     icon: Ship,
-    description: "Search and watch vessels",
+    description: "Browse the fleet and open vessel details",
   },
   {
     label: "Certificates & Clearances",
