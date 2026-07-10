@@ -172,6 +172,227 @@ export interface NewsResponse {
 }
 
 // ---------------------------------------------------------------------------
+// Supply chain — buyers, vendors, projects
+// ---------------------------------------------------------------------------
+export interface Buyer {
+  id: string;
+  fullName: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BuyerInput {
+  fullName: string;
+  email: string;
+}
+
+export type VendorStatus = "active" | "suspended" | "blacklisted" | "inactive";
+
+export type VendorCategory =
+  | "Drilling Services"
+  | "Engineering and Fabrication"
+  | "Procurement and Supply"
+  | "Logistics and Marine"
+  | "Inspection and Testing"
+  | "HSE Services"
+  | "Manpower Supply"
+  | "Equipment Rental"
+  | "Chemicals"
+  | "IT and Communications"
+  | "Other";
+
+export interface Vendor {
+  id: string;
+  name: string;
+  rcNumber?: string;
+  contactPerson?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  /** Nigerian state. */
+  state?: string;
+  category: VendorCategory;
+  /** 0–100; 51%+ marks an indigenous company for local-content purposes. */
+  nigerianEquityPercentage?: number;
+  /** Performance sub-scores, 0–5. */
+  deliveryScore?: number;
+  qualityScore?: number;
+  hseScore?: number;
+  complianceScore?: number;
+  /** Manual override for the computed confidence rating (0–5). */
+  confidenceOverride?: number;
+  /** Weighted average of the sub-scores, or the override when set. */
+  confidenceRating?: number;
+  status: VendorStatus;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type VendorInput = Omit<
+  Vendor,
+  "id" | "confidenceRating" | "createdAt" | "updatedAt"
+>;
+
+/** Vendor list row enriched with per-vendor aggregates. */
+export interface VendorWithStats extends Vendor {
+  projectCount: number;
+  documentCounts: { total: number; expired: number; expiringSoon: number };
+}
+
+export type VendorDocumentType =
+  | "Certificate of Incorporation (CAC)"
+  | "CAC Form C02 (Allotment of Shares)"
+  | "CAC Form C07 (List of Directors)"
+  | "NUPRC Certificate"
+  | "NCDMB / NOGIC JQS registration"
+  | "NIPEX / NJQS prequalification"
+  | "Tax Clearance Certificate (TCC)"
+  | "VAT Registration Certificate"
+  | "HSE / ISO certification"
+  | "Insurance certificate"
+  | "Bank reference letter"
+  | "Audited financial statements"
+  | "Other";
+
+/** Derived from expiry_date at read time; documents without one are Valid. */
+export type VendorDocumentStatus = "Valid" | "Expiring Soon" | "Expired";
+
+export interface VendorDocument {
+  id: string;
+  vendorId: string;
+  documentType: VendorDocumentType;
+  documentName: string;
+  documentNumber?: string;
+  issueDate?: string;
+  expiryDate?: string;
+  fileUrl?: string;
+  status: VendorDocumentStatus;
+  /** Days until expiry (negative when expired); undefined when no expiry. */
+  daysToExpiry?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface VendorDocumentInput {
+  documentType: VendorDocumentType;
+  documentName: string;
+  documentNumber?: string;
+  issueDate?: string;
+  expiryDate?: string;
+}
+
+export type SupplyProjectStatus =
+  | "ongoing"
+  | "completed"
+  | "cancelled"
+  | "delayed"
+  | "expired";
+
+export type ProcurementMethod =
+  | "open competitive bidding"
+  | "restricted tender"
+  | "two stage tender"
+  | "single source";
+
+export interface SupplyProject {
+  id: string;
+  title: string;
+  referenceNumber: string;
+  description?: string;
+  vendorId?: string;
+  buyerId: string;
+  status: SupplyProjectStatus;
+  procurementMethod: ProcurementMethod;
+  /** ₦ unless currency says otherwise. */
+  budgetedCost: number;
+  finalCost?: number;
+  /** budgeted − final; null until a final cost exists. */
+  costSavings?: number;
+  currency: "NGN" | "USD";
+  usdValue?: number;
+  startDate: string;
+  /** Planned completion. */
+  endDate: string;
+  actualCompletionDate?: string;
+  nigerianContentPercentage?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type SupplyProjectInput = Omit<
+  SupplyProject,
+  "id" | "status" | "costSavings" | "createdAt" | "updatedAt"
+> & { status?: SupplyProjectStatus };
+
+/** Project list row enriched with names and delay awareness. */
+export interface SupplyProjectWithRelations extends SupplyProject {
+  vendorName?: string;
+  buyerName: string;
+  /** Ongoing/delayed but past the planned end date. */
+  pastDue: boolean;
+}
+
+export interface ProjectStatusChange {
+  id: string;
+  projectId: string;
+  oldStatus?: SupplyProjectStatus;
+  newStatus: SupplyProjectStatus;
+  changedBy?: string;
+  changedByName?: string;
+  changedAt: string;
+  note?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Supply chain analytics (one payload for the dashboard)
+// ---------------------------------------------------------------------------
+export interface SupplyChainAnalytics {
+  statusCounts: Record<SupplyProjectStatus, number>;
+  totalProjects: number;
+  totalSavings: number;
+  totalBudgeted: number;
+  totalFinal: number;
+  savingsByMonth: Array<{ month: string; savings: number }>;
+  topBuyers: Array<{
+    id: string;
+    name: string;
+    totalSavings: number;
+    projectCount: number;
+  }>;
+  vendorSnapshot: {
+    total: number;
+    active: number;
+    withExpiredDocs: number;
+    withExpiringDocs: number;
+  };
+  methodBreakdown: Array<{
+    method: ProcurementMethod;
+    count: number;
+    budgeted: number;
+  }>;
+  /** Average across active (ongoing/delayed) projects; null when none set. */
+  avgNigerianContent: number | null;
+  topVendors: Array<{
+    id: string;
+    name: string;
+    projectCount: number;
+    totalValue: number;
+  }>;
+  complianceAlerts: Array<{
+    vendorId: string;
+    vendorName: string;
+    documentName: string;
+    documentType: VendorDocumentType;
+    expiryDate: string;
+    status: VendorDocumentStatus;
+    daysToExpiry: number;
+  }>;
+  timeliness: { onTime: number; late: number; pastDueOngoing: number };
+}
+
+// ---------------------------------------------------------------------------
 // Generic API envelope
 // ---------------------------------------------------------------------------
 export interface ApiError {
