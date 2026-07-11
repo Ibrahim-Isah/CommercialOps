@@ -295,6 +295,26 @@ export function mockPriceSeries(days: number): PricePoint[] {
 export function mockNews(): NewsItem[] {
   const items: Array<Omit<NewsItem, "id">> = [
     {
+      title:
+        "NNPC lifts force majeure on Bonny Light exports as pipeline repairs complete",
+      source: "Demo Nigeria Energy Wire",
+      url: "https://example.com/nnpc-bonny",
+      publishedAt: isoDateTime(-60 * 2),
+      description:
+        "Loadings at the Bonny terminal resume after weeks of reduced output, easing pressure on Nigerian crude differentials.",
+      categories: ["Nigeria", "Crude"],
+    },
+    {
+      title:
+        "NUPRC issues new upstream gas flare commercialisation guidelines",
+      source: "Demo Nigeria Energy Wire",
+      url: "https://example.com/nuprc-flare",
+      publishedAt: isoDateTime(-60 * 8),
+      description:
+        "The upstream regulator's latest guidelines tighten flare-out timelines for producers in the Niger Delta.",
+      categories: ["Nigeria", "Gas/LNG", "Regulatory"],
+    },
+    {
       title: "OPEC+ holds output targets steady as members weigh demand outlook",
       source: "Demo Newswire",
       url: "https://example.com/opec-output",

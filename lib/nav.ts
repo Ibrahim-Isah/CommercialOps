@@ -89,7 +89,7 @@ export const NAV_ITEMS: NavEntry[] = [
     label: "Forecast",
     href: "/forecast",
     icon: TrendingUp,
-    description: "Simple statistical projection",
+    description: "Oil & gas price outlook with fan forecasts",
   },
   {
     label: "Industry Updates",
