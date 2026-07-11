@@ -13,6 +13,7 @@ import type { NewsCategory, NewsResponse } from "@/types";
 
 const FILTERS: Array<{ key: "All" | NewsCategory; label: string }> = [
   { key: "All", label: "All" },
+  { key: "Nigeria", label: "🇳🇬 Nigeria" },
   { key: "Crude", label: "Crude" },
   { key: "Gas/LNG", label: "Gas/LNG" },
   { key: "OPEC", label: "OPEC" },
@@ -53,7 +54,7 @@ export default function NewsPage() {
     <div>
       <PageHeader
         title="Industry Updates"
-        description="Oil & gas headlines from NewsAPI, OilPrice.com and EIA feeds."
+        description="Nigerian oil & gas news first, then global market headlines — from Nigerian outlets, NewsAPI, OilPrice.com and EIA feeds."
       >
         {data?.isMock && <DemoBadge />}
         <Button
@@ -107,8 +108,14 @@ export default function NewsPage() {
               <CardHeader className="pb-2">
                 <div className="mb-2 flex flex-wrap gap-1.5">
                   {item.categories.map((c) => (
-                    <Badge key={c} variant="secondary" className="text-[10px]">
-                      {c}
+                    <Badge
+                      key={c}
+                      // Nigeria stories carry a distinct badge so they stand
+                      // out in the mixed feed.
+                      variant={c === "Nigeria" ? "success" : "secondary"}
+                      className="text-[10px]"
+                    >
+                      {c === "Nigeria" ? "🇳🇬 Nigeria" : c}
                     </Badge>
                   ))}
                 </div>

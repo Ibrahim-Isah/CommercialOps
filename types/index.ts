@@ -125,33 +125,40 @@ export interface PriceSeries {
 }
 
 // ---------------------------------------------------------------------------
-// Forecast
+// Gas pricing (global benchmarks + Nigeria PIA regulated prices)
 // ---------------------------------------------------------------------------
-export interface ForecastPoint {
-  date: string;
-  /** Present on historical rows. */
-  actual?: number;
-  /** Present on projected rows. */
-  forecast?: number;
-  /** Optional confidence band. */
-  upper?: number;
-  lower?: number;
+export type GasBenchmarkKey = "henry_hub" | "ttf" | "jkm";
+
+export type PiaSector = "power" | "commercial" | "gas_based_industries";
+
+export interface PiaGasPrice {
+  id: string;
+  /** Date the regulated price takes effect (annual, 1 April). */
+  effectiveDate: string;
+  sector: PiaSector;
+  /** USD/MMBtu; for band sectors this is the ceiling (the DBP). */
+  priceUsdMmbtu: number;
+  /** Lower bound, set only for band sectors (gas-based industries). */
+  floorUsdMmbtu?: number;
 }
 
-export interface ForecastResult {
-  label: string;
-  points: ForecastPoint[];
-  horizonDays: number;
-  /** Slope of the fitted trend (USD/barrel per day). */
-  trendPerDay: number;
-  method: string;
-  isMock: boolean;
+export interface GasData {
+  /** Historical monthly benchmark prices in USD/MMBtu, oldest first. */
+  series: Record<GasBenchmarkKey, PricePoint[]>;
+  pia: PiaGasPrice[];
+  fetchedAt: string;
 }
 
 // ---------------------------------------------------------------------------
 // News
 // ---------------------------------------------------------------------------
-export type NewsCategory = "Crude" | "Gas/LNG" | "OPEC" | "Regulatory" | "General";
+export type NewsCategory =
+  | "Nigeria"
+  | "Crude"
+  | "Gas/LNG"
+  | "OPEC"
+  | "Regulatory"
+  | "General";
 
 export interface NewsItem {
   id: string;
