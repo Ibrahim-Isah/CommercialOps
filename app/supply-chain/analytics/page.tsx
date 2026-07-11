@@ -306,7 +306,12 @@ export default function SupplyChainAnalyticsPage() {
                       {i + 1}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium">{b.name}</p>
+                      <Link
+                        href={`/supply-chain/buyers/${b.id}`}
+                        className="block truncate font-medium hover:text-accent hover:underline"
+                      >
+                        {b.name}
+                      </Link>
                       <p className="text-xs text-muted-foreground">
                         {b.projectCount} project{b.projectCount === 1 ? "" : "s"}
                       </p>

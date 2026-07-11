@@ -9,6 +9,7 @@ import {
   BarChart3,
   Building2,
   FolderKanban,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 
@@ -57,6 +58,12 @@ export const NAV_ITEMS: NavEntry[] = [
         href: "/supply-chain/vendors",
         icon: Building2,
         description: "Contractors and suppliers",
+      },
+      {
+        label: "Buyers",
+        href: "/supply-chain/buyers",
+        icon: Users,
+        description: "Procurement staff and their performance",
       },
       {
         label: "Projects",

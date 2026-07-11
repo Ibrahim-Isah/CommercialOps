@@ -9,7 +9,9 @@ import { fail, isInvalidInput, isUniqueViolation } from "@/lib/supply-chain/comm
 import { StoreError } from "@/lib/store";
 import type {
   Buyer,
+  BuyerActivity,
   BuyerInput,
+  BuyerWithStats,
   ProjectStatusChange,
   SupplyProject,
   SupplyProjectInput,
@@ -123,6 +125,170 @@ export async function listBuyers(): Promise<Buyer[]> {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }));
+}
+
+/** Buyer list with per-buyer project counts and per-currency savings. */
+export async function listBuyersWithStats(): Promise<BuyerWithStats[]> {
+  const sb = getSupabase();
+  const [buyers, projects] = await Promise.all([
+    sb.from("buyers").select("*").order("full_name", { ascending: true }),
+    sb
+      .from("projects")
+      .select("buyer_id, status, cost_savings_ngn, cost_savings_usd"),
+  ]);
+  if (buyers.error) fail("load buyers", buyers.error);
+  if (projects.error) fail("load buyer project stats", projects.error);
+
+  const agg = new Map<
+    string,
+    { projectCount: number; ongoingCount: number; savingsNgn: number; savingsUsd: number }
+  >();
+  for (const p of projects.data as Array<{
+    buyer_id: string;
+    status: SupplyProjectStatus;
+    cost_savings_ngn: number | null;
+    cost_savings_usd: number | null;
+  }>) {
+    const a =
+      agg.get(p.buyer_id) ??
+      { projectCount: 0, ongoingCount: 0, savingsNgn: 0, savingsUsd: 0 };
+    a.projectCount += 1;
+    if (p.status === "ongoing" || p.status === "delayed") a.ongoingCount += 1;
+    a.savingsNgn += p.cost_savings_ngn ?? 0;
+    a.savingsUsd += p.cost_savings_usd ?? 0;
+    agg.set(p.buyer_id, a);
+  }
+
+  return (buyers.data ?? []).map((row) => ({
+    id: row.id,
+    fullName: row.full_name,
+    email: row.email,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    ...(agg.get(row.id) ??
+      { projectCount: 0, ongoingCount: 0, savingsNgn: 0, savingsUsd: 0 }),
+  }));
+}
+
+/** Buyer + the projects they handle + their recent audit-trail activity. */
+export async function getBuyer(id: string): Promise<
+  | {
+      buyer: Buyer;
+      projects: SupplyProjectWithRelations[];
+      activity: BuyerActivity[];
+    }
+  | null
+> {
+  const sb = getSupabase();
+  const { data, error } = await sb
+    .from("buyers")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) {
+    if (isInvalidInput(error)) return null;
+    fail("load the buyer", error);
+  }
+  if (!data) return null;
+
+  const [projects, activity] = await Promise.all([
+    sb
+      .from("projects")
+      .select(PROJECT_SELECT)
+      .eq("buyer_id", id)
+      .order("created_at", { ascending: false }),
+    sb
+      .from("project_status_history")
+      .select("*, projects(title)")
+      .eq("changed_by", id)
+      .order("changed_at", { ascending: false })
+      .limit(10),
+  ]);
+  if (projects.error) fail("load the buyer's projects", projects.error);
+  if (activity.error) fail("load the buyer's activity", activity.error);
+
+  return {
+    buyer: {
+      id: data.id,
+      fullName: data.full_name,
+      email: data.email,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    },
+    projects: (projects.data as unknown as ProjectRow[]).map(rowToProject),
+    activity: (
+      activity.data as unknown as Array<
+        HistoryRow & { projects?: { title: string } | null }
+      >
+    ).map((h) => ({
+      id: h.id,
+      projectId: h.project_id,
+      projectTitle: h.projects?.title ?? "Deleted project",
+      oldStatus: h.old_status ?? undefined,
+      newStatus: h.new_status,
+      changedAt: h.changed_at,
+      note: h.note ?? undefined,
+    })),
+  };
+}
+
+export async function updateBuyer(
+  id: string,
+  input: BuyerInput
+): Promise<Buyer | undefined> {
+  const { data, error } = await getSupabase()
+    .from("buyers")
+    .update({
+      full_name: input.fullName,
+      email: input.email,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select("*")
+    .maybeSingle();
+  if (error) {
+    if (isInvalidInput(error)) return undefined;
+    if (isUniqueViolation(error)) {
+      throw new StoreError("A buyer with that email already exists.");
+    }
+    fail("update the buyer", error);
+  }
+  return data
+    ? {
+        id: data.id,
+        fullName: data.full_name,
+        email: data.email,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      }
+    : undefined;
+}
+
+/**
+ * Deleting a buyer who handles projects is blocked — the safer behaviour:
+ * projects must keep an accountable buyer, so reassign them first.
+ */
+export async function deleteBuyer(
+  id: string
+): Promise<"deleted" | "blocked" | "notfound"> {
+  const sb = getSupabase();
+  const owned = await sb
+    .from("projects")
+    .select("id", { count: "exact", head: true })
+    .eq("buyer_id", id);
+  if (owned.error) {
+    if (isInvalidInput(owned.error)) return "notfound";
+    fail("check the buyer's projects", owned.error);
+  }
+  if ((owned.count ?? 0) > 0) return "blocked";
+
+  const { data, error } = await sb
+    .from("buyers")
+    .delete()
+    .eq("id", id)
+    .select("id");
+  if (error) fail("delete the buyer", error);
+  return (data ?? []).length > 0 ? "deleted" : "notfound";
 }
 
 export async function createBuyer(input: BuyerInput): Promise<Buyer> {

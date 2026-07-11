@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createBuyer, listBuyers } from "@/lib/supply-chain/projects";
+import { createBuyer, listBuyersWithStats } from "@/lib/supply-chain/projects";
 import { parseBuyerInput } from "@/lib/supply-chain/validation";
 import { errorResponse } from "@/lib/supply-chain/http";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/** GET /api/supply-chain/buyers — all procurement staff. */
+/** GET /api/supply-chain/buyers — all procurement staff with their stats. */
 export async function GET() {
   try {
-    return NextResponse.json({ buyers: await listBuyers() });
+    return NextResponse.json({ buyers: await listBuyersWithStats() });
   } catch (e) {
     return errorResponse(e, "Failed to load buyers.");
   }

@@ -187,6 +187,26 @@ export interface BuyerInput {
   email: string;
 }
 
+/** Buyer list row enriched with per-buyer aggregates. */
+export interface BuyerWithStats extends Buyer {
+  projectCount: number;
+  ongoingCount: number;
+  /** Summed per currency — never combined (no FX rate). */
+  savingsNgn: number;
+  savingsUsd: number;
+}
+
+/** A status change made by a buyer, for the buyer detail activity feed. */
+export interface BuyerActivity {
+  id: string;
+  projectId: string;
+  projectTitle: string;
+  oldStatus?: SupplyProjectStatus;
+  newStatus: SupplyProjectStatus;
+  changedAt: string;
+  note?: string;
+}
+
 export type VendorStatus = "active" | "suspended" | "blacklisted" | "inactive";
 
 export type VendorCategory =

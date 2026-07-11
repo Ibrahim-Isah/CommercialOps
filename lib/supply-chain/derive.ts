@@ -87,10 +87,11 @@ export function formatUsd(amount: number): string {
 }
 
 function compact(amount: number, symbol: string, full: Intl.NumberFormat): string {
+  const sign = amount < 0 ? "-" : "";
   const abs = Math.abs(amount);
-  if (abs >= 1_000_000_000) return `${symbol}${(amount / 1_000_000_000).toFixed(1)}B`;
-  if (abs >= 1_000_000) return `${symbol}${(amount / 1_000_000).toFixed(1)}M`;
-  if (abs >= 1_000) return `${symbol}${(amount / 1_000).toFixed(0)}K`;
+  if (abs >= 1_000_000_000) return `${sign}${symbol}${(abs / 1_000_000_000).toFixed(1)}B`;
+  if (abs >= 1_000_000) return `${sign}${symbol}${(abs / 1_000_000).toFixed(1)}M`;
+  if (abs >= 1_000) return `${sign}${symbol}${(abs / 1_000).toFixed(0)}K`;
   return full.format(amount);
 }
 
