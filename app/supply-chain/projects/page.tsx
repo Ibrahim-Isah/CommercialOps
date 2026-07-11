@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/table";
 import { ProjectStatusBadge } from "@/components/supply-chain/badges";
 import { ProjectDialog } from "@/components/supply-chain/project-dialog";
-import { formatNaira } from "@/lib/supply-chain/derive";
+import { DualMoney } from "@/components/supply-chain/dual-money";
 import { PROJECT_STATUSES } from "@/lib/supply-chain/validation";
 import type {
   Buyer,
@@ -248,19 +248,22 @@ function ProjectsPageInner() {
                     <span className="text-muted-foreground">{p.buyerName}</span>
                   </p>
                   <p className="mt-2 text-sm font-semibold">
-                    {formatNaira(p.finalCost ?? p.budgetedCost)}
-                    {p.costSavings !== undefined && (
-                      <span
-                        className={
-                          "ml-2 text-xs font-medium " +
-                          (p.costSavings >= 0 ? "text-success" : "text-destructive")
-                        }
-                      >
-                        {p.costSavings >= 0 ? "saved " : "overrun "}
-                        {formatNaira(Math.abs(p.costSavings))}
-                      </span>
-                    )}
+                    <DualMoney
+                      ngn={p.finalCostNgn ?? p.budgetedCostNgn}
+                      usd={p.finalCostUsd ?? p.budgetedCostUsd}
+                    />
                   </p>
+                  {(p.costSavingsNgn !== undefined ||
+                    p.costSavingsUsd !== undefined) && (
+                    <p className="mt-1 text-xs">
+                      <span className="text-muted-foreground">Savings: </span>
+                      <DualMoney
+                        ngn={p.costSavingsNgn}
+                        usd={p.costSavingsUsd}
+                        signed
+                      />
+                    </p>
+                  )}
                   <p className="mt-1 text-xs text-muted-foreground">
                     {format(parseISO(p.startDate), "d MMM yyyy")} →{" "}
                     {format(parseISO(p.endDate), "d MMM yyyy")}
@@ -319,25 +322,27 @@ function ProjectsPageInner() {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell className="whitespace-nowrap text-right text-sm">
-                        {formatNaira(p.budgetedCost)}
+                      <TableCell className="text-right text-sm">
+                        <DualMoney
+                          ngn={p.budgetedCostNgn}
+                          usd={p.budgetedCostUsd}
+                          className="items-end"
+                        />
                       </TableCell>
-                      <TableCell className="whitespace-nowrap text-right text-sm">
-                        {p.finalCost !== undefined ? formatNaira(p.finalCost) : "—"}
+                      <TableCell className="text-right text-sm">
+                        <DualMoney
+                          ngn={p.finalCostNgn}
+                          usd={p.finalCostUsd}
+                          className="items-end"
+                        />
                       </TableCell>
-                      <TableCell
-                        className={
-                          "whitespace-nowrap text-right text-sm " +
-                          (p.costSavings === undefined
-                            ? "text-muted-foreground"
-                            : p.costSavings >= 0
-                              ? "text-success"
-                              : "text-destructive")
-                        }
-                      >
-                        {p.costSavings !== undefined
-                          ? formatNaira(p.costSavings)
-                          : "—"}
+                      <TableCell className="text-right text-sm">
+                        <DualMoney
+                          ngn={p.costSavingsNgn}
+                          usd={p.costSavingsUsd}
+                          signed
+                          className="items-end"
+                        />
                       </TableCell>
                       <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
                         {format(parseISO(p.startDate), "d MMM yy")} →{" "}

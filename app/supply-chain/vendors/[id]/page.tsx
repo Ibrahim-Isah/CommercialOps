@@ -36,7 +36,8 @@ import {
 import { VendorDialog } from "@/components/supply-chain/vendor-dialog";
 import { DocumentDialog } from "@/components/supply-chain/document-dialog";
 import { ConfirmDialog } from "@/components/supply-chain/confirm-dialog";
-import { formatNaira } from "@/lib/supply-chain/derive";
+import { DualMoney } from "@/components/supply-chain/dual-money";
+import { formatPairCompact } from "@/lib/supply-chain/derive";
 import type {
   SupplyProjectWithRelations,
   Vendor,
@@ -196,9 +197,13 @@ export default function VendorDetailPage() {
     (p) => p.status === "ongoing" || p.status === "delayed"
   ).length;
   const completed = projects.filter((p) => p.status === "completed").length;
+  // Value handled per currency; ₦ and $ are reported side by side (no FX rate).
   const totalValue = projects.reduce(
-    (sum, p) => sum + (p.finalCost ?? p.budgetedCost),
-    0
+    (sum, p) => ({
+      ngn: sum.ngn + (p.finalCostNgn ?? p.budgetedCostNgn ?? 0),
+      usd: sum.usd + (p.finalCostUsd ?? p.budgetedCostUsd ?? 0),
+    }),
+    { ngn: 0, usd: 0 }
   );
 
   return (
@@ -276,7 +281,10 @@ export default function VendorDetailPage() {
               <Stat label="Total projects" value={projects.length} />
               <Stat label="Ongoing" value={ongoing} />
               <Stat label="Completed" value={completed} />
-              <Stat label="Total value handled" value={formatNaira(totalValue)} />
+              <Stat
+                label="Total value handled"
+                value={formatPairCompact(totalValue)}
+              />
             </div>
           </CardContent>
         </Card>
@@ -323,7 +331,11 @@ export default function VendorDetailPage() {
                           <ProjectStatusBadge status={p.status} className="text-[10px]" />
                         </TableCell>
                         <TableCell className="text-right text-sm">
-                          {formatNaira(p.finalCost ?? p.budgetedCost)}
+                          <DualMoney
+                            ngn={p.finalCostNgn ?? p.budgetedCostNgn}
+                            usd={p.finalCostUsd ?? p.budgetedCostUsd}
+                            className="items-end"
+                          />
                         </TableCell>
                         <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
                           {format(parseISO(p.startDate), "d MMM yyyy")} →{" "}

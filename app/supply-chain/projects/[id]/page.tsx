@@ -34,7 +34,7 @@ import {
 import { ProjectDialog } from "@/components/supply-chain/project-dialog";
 import { StatusDialog } from "@/components/supply-chain/status-dialog";
 import { ConfirmDialog } from "@/components/supply-chain/confirm-dialog";
-import { formatMoney, formatNaira } from "@/lib/supply-chain/derive";
+import { DualMoney } from "@/components/supply-chain/dual-money";
 import type {
   Buyer,
   ProjectStatusChange,
@@ -287,7 +287,17 @@ export default function ProjectDetailPage() {
                     : undefined
                 }
               />
-              <Field label="Currency" value={project.currency} />
+              <Field
+                label="Currencies"
+                value={
+                  project.budgetedCostNgn !== undefined &&
+                  project.budgetedCostUsd !== undefined
+                    ? "₦ + $ (split contract)"
+                    : project.budgetedCostUsd !== undefined
+                      ? "USD ($)"
+                      : "Naira (₦)"
+                }
+              />
             </dl>
 
             <div className="space-y-1.5 border-t pt-4">
@@ -326,47 +336,40 @@ export default function ProjectDetailPage() {
               <dl className="grid grid-cols-3 gap-3">
                 <div className="rounded-md border p-3">
                   <dt className="text-xs text-muted-foreground">Budgeted</dt>
-                  <dd className="text-lg font-semibold">
-                    {formatNaira(project.budgetedCost)}
+                  <dd className="text-base font-semibold">
+                    <DualMoney
+                      ngn={project.budgetedCostNgn}
+                      usd={project.budgetedCostUsd}
+                    />
                   </dd>
                 </div>
                 <div className="rounded-md border p-3">
                   <dt className="text-xs text-muted-foreground">Final</dt>
-                  <dd className="text-lg font-semibold">
-                    {project.finalCost !== undefined
-                      ? formatNaira(project.finalCost)
-                      : "—"}
+                  <dd className="text-base font-semibold">
+                    <DualMoney
+                      ngn={project.finalCostNgn}
+                      usd={project.finalCostUsd}
+                    />
                   </dd>
                 </div>
                 <div className="rounded-md border p-3">
                   <dt className="text-xs text-muted-foreground">Savings</dt>
-                  <dd
-                    className={
-                      "text-lg font-semibold " +
-                      (project.costSavings === undefined
-                        ? ""
-                        : project.costSavings >= 0
-                          ? "text-success"
-                          : "text-destructive")
-                    }
-                  >
-                    {project.costSavings !== undefined
-                      ? formatNaira(project.costSavings)
-                      : "—"}
+                  <dd className="text-base font-semibold">
+                    <DualMoney
+                      ngn={project.costSavingsNgn}
+                      usd={project.costSavingsUsd}
+                      signed
+                    />
                   </dd>
                 </div>
               </dl>
-              {project.usdValue !== undefined && (
-                <p className="mt-3 text-xs text-muted-foreground">
-                  USD value: {formatMoney(project.usdValue, "USD")}
-                </p>
-              )}
-              {project.costSavings === undefined && (
-                <p className="mt-3 text-xs text-muted-foreground">
-                  Savings are calculated once a final cost is recorded
-                  (usually when the project completes).
-                </p>
-              )}
+              {project.costSavingsNgn === undefined &&
+                project.costSavingsUsd === undefined && (
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    Savings are calculated per currency once its final cost is
+                    recorded (usually when the project completes).
+                  </p>
+                )}
             </CardContent>
           </Card>
 

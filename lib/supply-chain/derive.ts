@@ -82,15 +82,35 @@ export function formatNaira(amount: number): string {
   return nairaFormat.format(amount);
 }
 
-export function formatMoney(amount: number, currency: "NGN" | "USD"): string {
-  return currency === "USD" ? usdFormat.format(amount) : nairaFormat.format(amount);
+export function formatUsd(amount: number): string {
+  return usdFormat.format(amount);
+}
+
+function compact(amount: number, symbol: string, full: Intl.NumberFormat): string {
+  const abs = Math.abs(amount);
+  if (abs >= 1_000_000_000) return `${symbol}${(amount / 1_000_000_000).toFixed(1)}B`;
+  if (abs >= 1_000_000) return `${symbol}${(amount / 1_000_000).toFixed(1)}M`;
+  if (abs >= 1_000) return `${symbol}${(amount / 1_000).toFixed(0)}K`;
+  return full.format(amount);
 }
 
 /** Compact ₦ for chart axes and stat tiles, e.g. ₦2.4M, ₦180K. */
 export function formatNairaCompact(amount: number): string {
-  const abs = Math.abs(amount);
-  if (abs >= 1_000_000_000) return `₦${(amount / 1_000_000_000).toFixed(1)}B`;
-  if (abs >= 1_000_000) return `₦${(amount / 1_000_000).toFixed(1)}M`;
-  if (abs >= 1_000) return `₦${(amount / 1_000).toFixed(0)}K`;
-  return nairaFormat.format(amount);
+  return compact(amount, "₦", nairaFormat);
+}
+
+/** Compact $ for stat tiles, e.g. $1.2M, $210K. */
+export function formatUsdCompact(amount: number): string {
+  return compact(amount, "$", usdFormat);
+}
+
+/**
+ * Compact "₦X + $Y" for aggregate rows; drops whichever currency is zero.
+ * Never converts between the two — there is no FX rate in the app.
+ */
+export function formatPairCompact(pair: { ngn: number; usd: number }): string {
+  const parts: string[] = [];
+  if (pair.ngn !== 0) parts.push(formatNairaCompact(pair.ngn));
+  if (pair.usd !== 0) parts.push(formatUsdCompact(pair.usd));
+  return parts.length > 0 ? parts.join(" + ") : "₦0";
 }

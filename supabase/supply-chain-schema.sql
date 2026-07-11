@@ -77,13 +77,18 @@ create table if not exists public.projects (
   procurement_method text not null check (procurement_method in (
     'open competitive bidding', 'restricted tender', 'two stage tender', 'single source'
   )),
-  budgeted_cost numeric not null check (budgeted_cost >= 0),
-  final_cost numeric check (final_cost is null or final_cost >= 0),
-  -- Generated column: savings only exist once a final cost is recorded
-  -- (stays null until then), and are directly queryable for analytics.
-  cost_savings numeric generated always as (budgeted_cost - final_cost) stored,
-  currency text not null default 'NGN' check (currency in ('NGN', 'USD')),
-  usd_value numeric check (usd_value is null or usd_value >= 0),
+  -- Costs are carried per currency: a project may be budgeted in Naira,
+  -- Dollars, or both (split contracts, e.g. 60/40, hold an amount in each).
+  budgeted_cost_ngn numeric check (budgeted_cost_ngn is null or budgeted_cost_ngn >= 0),
+  final_cost_ngn numeric check (final_cost_ngn is null or final_cost_ngn >= 0),
+  budgeted_cost_usd numeric check (budgeted_cost_usd is null or budgeted_cost_usd >= 0),
+  final_cost_usd numeric check (final_cost_usd is null or final_cost_usd >= 0),
+  -- Generated columns: savings only exist once that currency has a final cost
+  -- (stay null until then), and are directly queryable for analytics.
+  cost_savings_ngn numeric generated always as (budgeted_cost_ngn - final_cost_ngn) stored,
+  cost_savings_usd numeric generated always as (budgeted_cost_usd - final_cost_usd) stored,
+  constraint projects_budget_present
+    check (budgeted_cost_ngn is not null or budgeted_cost_usd is not null),
   start_date date not null,
   end_date date not null,
   actual_completion_date date,

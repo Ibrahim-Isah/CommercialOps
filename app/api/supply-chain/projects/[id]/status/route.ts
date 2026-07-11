@@ -23,7 +23,8 @@ export async function POST(
       status?: SupplyProjectStatus;
       note?: string;
       actualCompletionDate?: string;
-      finalCost?: number;
+      finalCostNgn?: number;
+      finalCostUsd?: number;
     } | null;
 
     const status = body?.status;
@@ -41,20 +42,26 @@ export async function POST(
         );
       }
     }
-    if (body?.finalCost !== undefined) {
-      const n = Number(body.finalCost);
-      if (!Number.isFinite(n) || n < 0) {
-        return NextResponse.json(
-          { error: "Final cost must be a non-negative number." },
-          { status: 400 }
-        );
+    for (const [label, value] of [
+      ["Final ₦ cost", body?.finalCostNgn],
+      ["Final $ cost", body?.finalCostUsd],
+    ] as const) {
+      if (value !== undefined) {
+        const n = Number(value);
+        if (!Number.isFinite(n) || n < 0) {
+          return NextResponse.json(
+            { error: `${label} must be a non-negative number.` },
+            { status: 400 }
+          );
+        }
       }
     }
 
     const project = await changeProjectStatus(params.id, status, {
       note: typeof body?.note === "string" ? body.note.trim() || undefined : undefined,
       actualCompletionDate: body?.actualCompletionDate,
-      finalCost: body?.finalCost,
+      finalCostNgn: body?.finalCostNgn,
+      finalCostUsd: body?.finalCostUsd,
     });
     if (!project) {
       return NextResponse.json({ error: "Project not found." }, { status: 404 });

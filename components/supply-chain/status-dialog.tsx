@@ -39,7 +39,8 @@ export function StatusDialog({
   const [status, setStatus] = React.useState<SupplyProjectStatus>(project.status);
   const [note, setNote] = React.useState("");
   const [actualCompletionDate, setActualCompletionDate] = React.useState("");
-  const [finalCost, setFinalCost] = React.useState("");
+  const [finalNgn, setFinalNgn] = React.useState("");
+  const [finalUsd, setFinalUsd] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const [saving, setSaving] = React.useState(false);
 
@@ -49,10 +50,14 @@ export function StatusDialog({
     setStatus(project.status);
     setNote("");
     setActualCompletionDate(project.actualCompletionDate ?? "");
-    setFinalCost(project.finalCost?.toString() ?? "");
+    setFinalNgn(project.finalCostNgn?.toString() ?? "");
+    setFinalUsd(project.finalCostUsd?.toString() ?? "");
   }, [open, project]);
 
   const completing = status === "completed";
+  // A final cost is needed for every currency the project was budgeted in.
+  const needsNgn = project.budgetedCostNgn !== undefined;
+  const needsUsd = project.budgetedCostUsd !== undefined;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -63,8 +68,11 @@ export function StatusDialog({
       if (!actualCompletionDate) {
         return setError("The actual completion date is required to complete a project.");
       }
-      if (finalCost === "") {
-        return setError("The final cost is required so savings can be calculated.");
+      if (needsNgn && finalNgn === "") {
+        return setError("This project has a ₦ budget — enter the final ₦ cost.");
+      }
+      if (needsUsd && finalUsd === "") {
+        return setError("This project has a $ budget — enter the final $ cost.");
       }
     }
     setSaving(true);
@@ -77,7 +85,8 @@ export function StatusDialog({
           status,
           note: note.trim() || undefined,
           actualCompletionDate: completing ? actualCompletionDate : undefined,
-          finalCost: finalCost === "" ? undefined : Number(finalCost),
+          finalCostNgn: finalNgn === "" ? undefined : Number(finalNgn),
+          finalCostUsd: finalUsd === "" ? undefined : Number(finalUsd),
         }),
       });
       if (!res.ok) {
@@ -126,22 +135,39 @@ export function StatusDialog({
           </div>
 
           {completing && (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-4">
               <DateField
                 label="Actual completion date"
                 value={actualCompletionDate}
                 onChange={setActualCompletionDate}
               />
-              <div className="space-y-1.5">
-                <Label htmlFor="s-final">Final cost (₦)</Label>
-                <Input
-                  id="s-final"
-                  type="number"
-                  min={0}
-                  value={finalCost}
-                  onChange={(e) => setFinalCost(e.target.value)}
-                  placeholder="Awarded / negotiated value"
-                />
+              <div className="grid gap-4 sm:grid-cols-2">
+                {needsNgn && (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="s-final-ngn">Final cost (₦)</Label>
+                    <Input
+                      id="s-final-ngn"
+                      type="number"
+                      min={0}
+                      value={finalNgn}
+                      onChange={(e) => setFinalNgn(e.target.value)}
+                      placeholder="Awarded ₦ value"
+                    />
+                  </div>
+                )}
+                {needsUsd && (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="s-final-usd">Final cost ($)</Label>
+                    <Input
+                      id="s-final-usd"
+                      type="number"
+                      min={0}
+                      value={finalUsd}
+                      onChange={(e) => setFinalUsd(e.target.value)}
+                      placeholder="Awarded $ value"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           )}

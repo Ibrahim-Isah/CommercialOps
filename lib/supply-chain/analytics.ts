@@ -29,7 +29,7 @@ export async function getSupplyChainAnalytics(): Promise<SupplyChainAnalytics> {
     sb
       .from("projects")
       .select(
-        "id, vendor_id, buyer_id, status, procurement_method, budgeted_cost, final_cost, cost_savings, end_date, actual_completion_date, nigerian_content_percentage"
+        "id, vendor_id, buyer_id, status, procurement_method, budgeted_cost_ngn, final_cost_ngn, cost_savings_ngn, budgeted_cost_usd, final_cost_usd, cost_savings_usd, end_date, actual_completion_date, nigerian_content_percentage"
       ),
     sb.from("vendors").select("id, name, status"),
     sb
@@ -48,13 +48,19 @@ export async function getSupplyChainAnalytics(): Promise<SupplyChainAnalytics> {
     buyer_id: string;
     status: SupplyProjectStatus;
     procurement_method: ProcurementMethod;
-    budgeted_cost: number;
-    final_cost: number | null;
-    cost_savings: number | null;
+    budgeted_cost_ngn: number | null;
+    final_cost_ngn: number | null;
+    cost_savings_ngn: number | null;
+    budgeted_cost_usd: number | null;
+    final_cost_usd: number | null;
+    cost_savings_usd: number | null;
     end_date: string;
     actual_completion_date: string | null;
     nigerian_content_percentage: number | null;
   };
+  /** Has either currency recorded any savings yet? */
+  const hasSavings = (p: P) =>
+    p.cost_savings_ngn !== null || p.cost_savings_usd !== null;
   const rows = projects.data as P[];
   const vendorList = vendors.data as Array<{
     id: string;
@@ -75,40 +81,54 @@ export async function getSupplyChainAnalytics(): Promise<SupplyChainAnalytics> {
   ) as Record<SupplyProjectStatus, number>;
   for (const p of rows) statusCounts[p.status] += 1;
 
-  // Spend + savings (savings only exist once a final cost is recorded).
-  let totalSavings = 0;
-  let totalBudgeted = 0;
-  let totalFinal = 0;
+  // Spend + savings per currency (savings only exist once that currency has a
+  // final cost). ₦ and $ are never summed together — the app holds no FX rate.
+  const totalSavings = { ngn: 0, usd: 0 };
+  const totalBudgeted = { ngn: 0, usd: 0 };
+  const totalFinal = { ngn: 0, usd: 0 };
   for (const p of rows) {
-    totalBudgeted += p.budgeted_cost;
-    if (p.final_cost !== null) {
-      totalFinal += p.final_cost;
-      totalSavings += p.cost_savings ?? 0;
+    totalBudgeted.ngn += p.budgeted_cost_ngn ?? 0;
+    totalBudgeted.usd += p.budgeted_cost_usd ?? 0;
+    if (p.final_cost_ngn !== null) {
+      totalFinal.ngn += p.final_cost_ngn;
+      totalSavings.ngn += p.cost_savings_ngn ?? 0;
+    }
+    if (p.final_cost_usd !== null) {
+      totalFinal.usd += p.final_cost_usd;
+      totalSavings.usd += p.cost_savings_usd ?? 0;
     }
   }
 
   // Savings trend by month, keyed on actual completion (falling back to the
   // planned end date), last 6 months with any savings.
-  const byMonth = new Map<string, { label: string; savings: number }>();
+  const byMonth = new Map<string, { label: string; ngn: number; usd: number }>();
   for (const p of rows) {
-    if (p.cost_savings === null) continue;
+    if (!hasSavings(p)) continue;
     const d = parseISO(p.actual_completion_date ?? p.end_date);
     const key = format(d, "yyyy-MM");
-    const entry = byMonth.get(key) ?? { label: format(d, "MMM yyyy"), savings: 0 };
-    entry.savings += p.cost_savings;
+    const entry =
+      byMonth.get(key) ?? { label: format(d, "MMM yyyy"), ngn: 0, usd: 0 };
+    entry.ngn += p.cost_savings_ngn ?? 0;
+    entry.usd += p.cost_savings_usd ?? 0;
     byMonth.set(key, entry);
   }
   const savingsByMonth = Array.from(byMonth.entries())
     .sort(([a], [b]) => a.localeCompare(b))
     .slice(-6)
-    .map(([, v]) => ({ month: v.label, savings: v.savings }));
+    .map(([, v]) => ({ month: v.label, ngn: v.ngn, usd: v.usd }));
 
-  // Top 3 buyers by summed savings.
-  const buyerAgg = new Map<string, { totalSavings: number; projectCount: number }>();
+  // Top 3 buyers by summed savings. Ranked on ₦ (the primary book currency)
+  // with $ as the tiebreak, since the two cannot be combined without a rate.
+  const buyerAgg = new Map<
+    string,
+    { savingsNgn: number; savingsUsd: number; projectCount: number }
+  >();
   for (const p of rows) {
-    const agg = buyerAgg.get(p.buyer_id) ?? { totalSavings: 0, projectCount: 0 };
+    const agg =
+      buyerAgg.get(p.buyer_id) ?? { savingsNgn: 0, savingsUsd: 0, projectCount: 0 };
     agg.projectCount += 1;
-    if (p.cost_savings !== null) agg.totalSavings += p.cost_savings;
+    agg.savingsNgn += p.cost_savings_ngn ?? 0;
+    agg.savingsUsd += p.cost_savings_usd ?? 0;
     buyerAgg.set(p.buyer_id, agg);
   }
   const topBuyers = Array.from(buyerAgg.entries())
@@ -117,7 +137,7 @@ export async function getSupplyChainAnalytics(): Promise<SupplyChainAnalytics> {
       name: buyerNames.get(id) ?? "Unknown buyer",
       ...agg,
     }))
-    .sort((a, b) => b.totalSavings - a.totalSavings)
+    .sort((a, b) => b.savingsNgn - a.savingsNgn || b.savingsUsd - a.savingsUsd)
     .slice(0, 3);
 
   // Vendor snapshot + compliance alerts (expired or expiring within 30 days).
@@ -150,11 +170,17 @@ export async function getSupplyChainAnalytics(): Promise<SupplyChainAnalytics> {
   complianceAlerts.sort((a, b) => a.daysToExpiry - b.daysToExpiry);
 
   // Procurement method breakdown (single-source share is a governance signal).
-  const methodAgg = new Map<ProcurementMethod, { count: number; budgeted: number }>();
+  const methodAgg = new Map<
+    ProcurementMethod,
+    { count: number; budgeted: { ngn: number; usd: number } }
+  >();
   for (const p of rows) {
-    const agg = methodAgg.get(p.procurement_method) ?? { count: 0, budgeted: 0 };
+    const agg =
+      methodAgg.get(p.procurement_method) ??
+      { count: 0, budgeted: { ngn: 0, usd: 0 } };
     agg.count += 1;
-    agg.budgeted += p.budgeted_cost;
+    agg.budgeted.ngn += p.budgeted_cost_ngn ?? 0;
+    agg.budgeted.usd += p.budgeted_cost_usd ?? 0;
     methodAgg.set(p.procurement_method, agg);
   }
   const methodBreakdown = Array.from(methodAgg.entries())
@@ -177,12 +203,18 @@ export async function getSupplyChainAnalytics(): Promise<SupplyChainAnalytics> {
       : null;
 
   // Top vendors by project count.
-  const vendorAgg = new Map<string, { projectCount: number; totalValue: number }>();
+  const vendorAgg = new Map<
+    string,
+    { projectCount: number; totalValue: { ngn: number; usd: number } }
+  >();
   for (const p of rows) {
     if (!p.vendor_id) continue;
-    const agg = vendorAgg.get(p.vendor_id) ?? { projectCount: 0, totalValue: 0 };
+    const agg =
+      vendorAgg.get(p.vendor_id) ??
+      { projectCount: 0, totalValue: { ngn: 0, usd: 0 } };
     agg.projectCount += 1;
-    agg.totalValue += p.final_cost ?? p.budgeted_cost;
+    agg.totalValue.ngn += p.final_cost_ngn ?? p.budgeted_cost_ngn ?? 0;
+    agg.totalValue.usd += p.final_cost_usd ?? p.budgeted_cost_usd ?? 0;
     vendorAgg.set(p.vendor_id, agg);
   }
   const topVendors = Array.from(vendorAgg.entries())

@@ -305,13 +305,19 @@ export interface SupplyProject {
   buyerId: string;
   status: SupplyProjectStatus;
   procurementMethod: ProcurementMethod;
-  /** ₦ unless currency says otherwise. */
-  budgetedCost: number;
-  finalCost?: number;
-  /** budgeted − final; null until a final cost exists. */
-  costSavings?: number;
-  currency: "NGN" | "USD";
-  usdValue?: number;
+  /**
+   * Costs are carried per currency: a project may be budgeted in ₦, $, or
+   * both (split contracts, e.g. 60/40, hold an amount in each currency).
+   * At least one budgeted amount is always present.
+   */
+  budgetedCostNgn?: number;
+  finalCostNgn?: number;
+  /** budgetedNgn − finalNgn; undefined until a ₦ final cost exists. */
+  costSavingsNgn?: number;
+  budgetedCostUsd?: number;
+  finalCostUsd?: number;
+  /** budgetedUsd − finalUsd; undefined until a $ final cost exists. */
+  costSavingsUsd?: number;
   startDate: string;
   /** Planned completion. */
   endDate: string;
@@ -323,7 +329,7 @@ export interface SupplyProject {
 
 export type SupplyProjectInput = Omit<
   SupplyProject,
-  "id" | "status" | "costSavings" | "createdAt" | "updatedAt"
+  "id" | "status" | "costSavingsNgn" | "costSavingsUsd" | "createdAt" | "updatedAt"
 > & { status?: SupplyProjectStatus };
 
 /** Project list row enriched with names and delay awareness. */
@@ -348,17 +354,24 @@ export interface ProjectStatusChange {
 // ---------------------------------------------------------------------------
 // Supply chain analytics (one payload for the dashboard)
 // ---------------------------------------------------------------------------
+/** A ₦ and $ amount side by side — the two are never summed (no FX rate). */
+export interface MoneyPair {
+  ngn: number;
+  usd: number;
+}
+
 export interface SupplyChainAnalytics {
   statusCounts: Record<SupplyProjectStatus, number>;
   totalProjects: number;
-  totalSavings: number;
-  totalBudgeted: number;
-  totalFinal: number;
-  savingsByMonth: Array<{ month: string; savings: number }>;
+  totalSavings: MoneyPair;
+  totalBudgeted: MoneyPair;
+  totalFinal: MoneyPair;
+  savingsByMonth: Array<{ month: string; ngn: number; usd: number }>;
   topBuyers: Array<{
     id: string;
     name: string;
-    totalSavings: number;
+    savingsNgn: number;
+    savingsUsd: number;
     projectCount: number;
   }>;
   vendorSnapshot: {
@@ -370,7 +383,7 @@ export interface SupplyChainAnalytics {
   methodBreakdown: Array<{
     method: ProcurementMethod;
     count: number;
-    budgeted: number;
+    budgeted: MoneyPair;
   }>;
   /** Average across active (ongoing/delayed) projects; null when none set. */
   avgNigerianContent: number | null;
@@ -378,7 +391,7 @@ export interface SupplyChainAnalytics {
     id: string;
     name: string;
     projectCount: number;
-    totalValue: number;
+    totalValue: MoneyPair;
   }>;
   complianceAlerts: Array<{
     vendorId: string;

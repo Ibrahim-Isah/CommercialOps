@@ -61,10 +61,11 @@ export function ProjectDialog({
   const [method, setMethod] = React.useState<ProcurementMethod>(
     "open competitive bidding"
   );
-  const [budgetedCost, setBudgetedCost] = React.useState("");
-  const [finalCost, setFinalCost] = React.useState("");
-  const [currency, setCurrency] = React.useState<"NGN" | "USD">("NGN");
-  const [usdValue, setUsdValue] = React.useState("");
+  // Costs per currency: enter ₦, $, or both (split contracts carry both).
+  const [budgetNgn, setBudgetNgn] = React.useState("");
+  const [budgetUsd, setBudgetUsd] = React.useState("");
+  const [finalNgn, setFinalNgn] = React.useState("");
+  const [finalUsd, setFinalUsd] = React.useState("");
   const [startDate, setStartDate] = React.useState("");
   const [endDate, setEndDate] = React.useState("");
   const [nc, setNc] = React.useState("");
@@ -89,10 +90,10 @@ export function ProjectDialog({
     setBuyerId(project?.buyerId ?? "");
     setVendorId(project?.vendorId ?? NO_VENDOR);
     setMethod(project?.procurementMethod ?? "open competitive bidding");
-    setBudgetedCost(project?.budgetedCost?.toString() ?? "");
-    setFinalCost(project?.finalCost?.toString() ?? "");
-    setCurrency(project?.currency ?? "NGN");
-    setUsdValue(project?.usdValue?.toString() ?? "");
+    setBudgetNgn(project?.budgetedCostNgn?.toString() ?? "");
+    setBudgetUsd(project?.budgetedCostUsd?.toString() ?? "");
+    setFinalNgn(project?.finalCostNgn?.toString() ?? "");
+    setFinalUsd(project?.finalCostUsd?.toString() ?? "");
     setStartDate(project?.startDate ?? "");
     setEndDate(project?.endDate ?? "");
     setNc(project?.nigerianContentPercentage?.toString() ?? "");
@@ -135,8 +136,8 @@ export function ProjectDialog({
     if (!title.trim()) return setError("Title is required.");
     if (!referenceNumber.trim()) return setError("Reference number is required.");
     if (!buyerId) return setError("Pick the buyer handling this project.");
-    if (!budgetedCost || Number(budgetedCost) < 0) {
-      return setError("Budgeted cost is required.");
+    if (budgetNgn === "" && budgetUsd === "") {
+      return setError("Enter a budgeted cost in at least one currency (₦ or $).");
     }
     if (!startDate || !endDate) {
       return setError("Start and planned end dates are required.");
@@ -157,10 +158,10 @@ export function ProjectDialog({
           buyerId,
           vendorId: vendorId === NO_VENDOR ? undefined : vendorId,
           procurementMethod: method,
-          budgetedCost: Number(budgetedCost),
-          finalCost: finalCost === "" ? undefined : Number(finalCost),
-          currency,
-          usdValue: usdValue === "" ? undefined : Number(usdValue),
+          budgetedCostNgn: budgetNgn === "" ? undefined : Number(budgetNgn),
+          budgetedCostUsd: budgetUsd === "" ? undefined : Number(budgetUsd),
+          finalCostNgn: finalNgn === "" ? undefined : Number(finalNgn),
+          finalCostUsd: finalUsd === "" ? undefined : Number(finalUsd),
           startDate,
           endDate,
           actualCompletionDate: project?.actualCompletionDate,
@@ -312,70 +313,73 @@ export function ProjectDialog({
             </div>
           )}
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="p-budget">Budgeted cost (₦)</Label>
-              <Input
-                id="p-budget"
-                type="number"
-                min={0}
-                value={budgetedCost}
-                onChange={(e) => setBudgetedCost(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="p-final">Final cost (₦, optional)</Label>
-              <Input
-                id="p-final"
-                type="number"
-                min={0}
-                value={finalCost}
-                onChange={(e) => setFinalCost(e.target.value)}
-                placeholder="Awarded value"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="p-nc">Nigerian content %</Label>
-              <Input
-                id="p-nc"
-                type="number"
-                min={0}
-                max={100}
-                value={nc}
-                onChange={(e) => setNc(e.target.value)}
-                placeholder="optional"
-              />
+          <div>
+            <p className="mb-2 text-sm font-medium">
+              Costs
+              <span className="ml-1 font-normal text-muted-foreground">
+                — enter ₦, $, or both for split contracts (e.g. 60/40)
+              </span>
+            </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="p-budget-ngn">Budgeted cost (₦)</Label>
+                <Input
+                  id="p-budget-ngn"
+                  type="number"
+                  min={0}
+                  value={budgetNgn}
+                  onChange={(e) => setBudgetNgn(e.target.value)}
+                  placeholder="Naira portion"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="p-budget-usd">Budgeted cost ($)</Label>
+                <Input
+                  id="p-budget-usd"
+                  type="number"
+                  min={0}
+                  value={budgetUsd}
+                  onChange={(e) => setBudgetUsd(e.target.value)}
+                  placeholder="Dollar portion"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="p-final-ngn">Final cost (₦, optional)</Label>
+                <Input
+                  id="p-final-ngn"
+                  type="number"
+                  min={0}
+                  value={finalNgn}
+                  onChange={(e) => setFinalNgn(e.target.value)}
+                  placeholder="Awarded ₦ value"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="p-final-usd">Final cost ($, optional)</Label>
+                <Input
+                  id="p-final-usd"
+                  type="number"
+                  min={0}
+                  value={finalUsd}
+                  onChange={(e) => setFinalUsd(e.target.value)}
+                  placeholder="Awarded $ value"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="p-currency">Currency</Label>
-              <Select
-                value={currency}
-                onValueChange={(v) => setCurrency(v as "NGN" | "USD")}
-              >
-                <SelectTrigger id="p-currency">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="NGN">NGN (₦)</SelectItem>
-                  <SelectItem value="USD">USD ($)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5 sm:col-span-2">
-              <Label htmlFor="p-usd">USD value (optional)</Label>
-              <Input
-                id="p-usd"
-                type="number"
-                min={0}
-                value={usdValue}
-                onChange={(e) => setUsdValue(e.target.value)}
-                placeholder="Dollar value when quoted in USD"
-              />
-            </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="p-nc">Nigerian content %</Label>
+            <Input
+              id="p-nc"
+              type="number"
+              min={0}
+              max={100}
+              value={nc}
+              onChange={(e) => setNc(e.target.value)}
+              placeholder="optional"
+              className="sm:max-w-[200px]"
+            />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">

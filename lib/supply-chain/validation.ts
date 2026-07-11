@@ -218,23 +218,21 @@ export function parseProjectInput(body: unknown): Result<SupplyProjectInput> {
     return { error: "A valid procurement method is required." };
   }
 
-  const budgeted = optNum(b.budgetedCost, "Budgeted cost", 0, Number.MAX_SAFE_INTEGER);
-  if ("error" in budgeted) return budgeted;
-  if (budgeted.value === undefined) return { error: "Budgeted cost is required." };
+  const budgetedNgn = optNum(b.budgetedCostNgn, "Budgeted ₦ cost", 0, Number.MAX_SAFE_INTEGER);
+  if ("error" in budgetedNgn) return budgetedNgn;
+  const budgetedUsd = optNum(b.budgetedCostUsd, "Budgeted $ cost", 0, Number.MAX_SAFE_INTEGER);
+  if ("error" in budgetedUsd) return budgetedUsd;
+  if (budgetedNgn.value === undefined && budgetedUsd.value === undefined) {
+    return { error: "A budgeted cost is required in at least one currency (₦ or $)." };
+  }
 
-  const finalCost = optNum(b.finalCost, "Final cost", 0, Number.MAX_SAFE_INTEGER);
-  if ("error" in finalCost) return finalCost;
-
-  const usdValue = optNum(b.usdValue, "USD value", 0, Number.MAX_SAFE_INTEGER);
-  if ("error" in usdValue) return usdValue;
+  const finalNgn = optNum(b.finalCostNgn, "Final ₦ cost", 0, Number.MAX_SAFE_INTEGER);
+  if ("error" in finalNgn) return finalNgn;
+  const finalUsd = optNum(b.finalCostUsd, "Final $ cost", 0, Number.MAX_SAFE_INTEGER);
+  if ("error" in finalUsd) return finalUsd;
 
   const nc = optNum(b.nigerianContentPercentage, "Nigerian content", 0, 100);
   if ("error" in nc) return nc;
-
-  const currency = (b.currency ?? "NGN") as "NGN" | "USD";
-  if (currency !== "NGN" && currency !== "USD") {
-    return { error: "Currency must be NGN or USD." };
-  }
 
   const startDate = str(b.startDate);
   const endDate = str(b.endDate);
@@ -256,10 +254,10 @@ export function parseProjectInput(body: unknown): Result<SupplyProjectInput> {
       vendorId: optStr(b.vendorId),
       buyerId,
       procurementMethod,
-      budgetedCost: budgeted.value,
-      finalCost: finalCost.value,
-      currency,
-      usdValue: usdValue.value,
+      budgetedCostNgn: budgetedNgn.value,
+      finalCostNgn: finalNgn.value,
+      budgetedCostUsd: budgetedUsd.value,
+      finalCostUsd: finalUsd.value,
       startDate,
       endDate,
       actualCompletionDate: actual,

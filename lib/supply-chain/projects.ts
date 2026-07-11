@@ -26,11 +26,12 @@ interface ProjectRow {
   buyer_id: string;
   status: SupplyProjectStatus;
   procurement_method: SupplyProject["procurementMethod"];
-  budgeted_cost: number;
-  final_cost: number | null;
-  cost_savings: number | null;
-  currency: "NGN" | "USD";
-  usd_value: number | null;
+  budgeted_cost_ngn: number | null;
+  final_cost_ngn: number | null;
+  cost_savings_ngn: number | null;
+  budgeted_cost_usd: number | null;
+  final_cost_usd: number | null;
+  cost_savings_usd: number | null;
   start_date: string;
   end_date: string;
   actual_completion_date: string | null;
@@ -68,11 +69,12 @@ function rowToProject(row: ProjectRow): SupplyProjectWithRelations {
     buyerId: row.buyer_id,
     status: row.status,
     procurementMethod: row.procurement_method,
-    budgetedCost: row.budgeted_cost,
-    finalCost: row.final_cost ?? undefined,
-    costSavings: row.cost_savings ?? undefined,
-    currency: row.currency,
-    usdValue: row.usd_value ?? undefined,
+    budgetedCostNgn: row.budgeted_cost_ngn ?? undefined,
+    finalCostNgn: row.final_cost_ngn ?? undefined,
+    costSavingsNgn: row.cost_savings_ngn ?? undefined,
+    budgetedCostUsd: row.budgeted_cost_usd ?? undefined,
+    finalCostUsd: row.final_cost_usd ?? undefined,
+    costSavingsUsd: row.cost_savings_usd ?? undefined,
     startDate: row.start_date,
     endDate: row.end_date,
     actualCompletionDate: row.actual_completion_date ?? undefined,
@@ -93,10 +95,10 @@ function inputToRow(input: SupplyProjectInput) {
     vendor_id: input.vendorId ?? null,
     buyer_id: input.buyerId,
     procurement_method: input.procurementMethod,
-    budgeted_cost: input.budgetedCost,
-    final_cost: input.finalCost ?? null,
-    currency: input.currency,
-    usd_value: input.usdValue ?? null,
+    budgeted_cost_ngn: input.budgetedCostNgn ?? null,
+    final_cost_ngn: input.finalCostNgn ?? null,
+    budgeted_cost_usd: input.budgetedCostUsd ?? null,
+    final_cost_usd: input.finalCostUsd ?? null,
     start_date: input.startDate,
     end_date: input.endDate,
     actual_completion_date: input.actualCompletionDate ?? null,
@@ -262,13 +264,16 @@ export async function changeProjectStatus(
   options?: {
     note?: string;
     actualCompletionDate?: string;
-    finalCost?: number;
+    finalCostNgn?: number;
+    finalCostUsd?: number;
   }
 ): Promise<SupplyProjectWithRelations | undefined> {
   const sb = getSupabase();
   const { data: existing, error: readError } = await sb
     .from("projects")
-    .select("id, status, buyer_id")
+    .select(
+      "id, status, buyer_id, budgeted_cost_ngn, final_cost_ngn, budgeted_cost_usd, final_cost_usd"
+    )
     .eq("id", id)
     .maybeSingle();
   if (readError) {
@@ -284,8 +289,28 @@ export async function changeProjectStatus(
   if (options?.actualCompletionDate) {
     patch.actual_completion_date = options.actualCompletionDate;
   }
-  if (options?.finalCost !== undefined) {
-    patch.final_cost = options.finalCost;
+  if (options?.finalCostNgn !== undefined) {
+    patch.final_cost_ngn = options.finalCostNgn;
+  }
+  if (options?.finalCostUsd !== undefined) {
+    patch.final_cost_usd = options.finalCostUsd;
+  }
+
+  // Completing a project requires a final cost in every currency it was
+  // budgeted in, so savings compute for the whole (possibly split) contract.
+  if (newStatus === "completed") {
+    const finalNgn = options?.finalCostNgn ?? existing.final_cost_ngn;
+    const finalUsd = options?.finalCostUsd ?? existing.final_cost_usd;
+    if (existing.budgeted_cost_ngn !== null && finalNgn === null) {
+      throw new StoreError(
+        "This project has a ₦ budget — record the final ₦ cost to complete it."
+      );
+    }
+    if (existing.budgeted_cost_usd !== null && finalUsd === null) {
+      throw new StoreError(
+        "This project has a $ budget — record the final $ cost to complete it."
+      );
+    }
   }
 
   const { data, error } = await sb

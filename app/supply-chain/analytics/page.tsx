@@ -23,9 +23,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DocumentStatusBadge } from "@/components/supply-chain/badges";
+import { DualMoney } from "@/components/supply-chain/dual-money";
 import {
   formatNaira,
   formatNairaCompact,
+  formatPairCompact,
+  formatUsd,
   NIGERIAN_CONTENT_TARGET,
 } from "@/lib/supply-chain/derive";
 import type { SupplyChainAnalytics, SupplyProjectStatus } from "@/types";
@@ -195,20 +198,29 @@ export default function SupplyChainAnalyticsPage() {
             </SectionTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{formatNaira(a.totalSavings)}</p>
+            <p className="text-3xl font-bold">
+              {formatNaira(a.totalSavings.ngn)}
+              {a.totalSavings.usd !== 0 && (
+                <span className="ml-2 text-xl font-semibold text-muted-foreground">
+                  + {formatUsd(a.totalSavings.usd)}
+                </span>
+              )}
+            </p>
             <p className="mb-4 text-sm text-muted-foreground">
-              total savings across all projects with a final cost
+              total savings across all projects with a final cost, per currency
             </p>
             <div className="mb-4 grid grid-cols-2 gap-3">
               <div className="rounded-md border p-3">
                 <p className="text-xs text-muted-foreground">Total budgeted</p>
                 <p className="text-lg font-semibold">
-                  {formatNaira(a.totalBudgeted)}
+                  {formatPairCompact(a.totalBudgeted)}
                 </p>
               </div>
               <div className="rounded-md border p-3">
                 <p className="text-xs text-muted-foreground">Total final</p>
-                <p className="text-lg font-semibold">{formatNaira(a.totalFinal)}</p>
+                <p className="text-lg font-semibold">
+                  {formatPairCompact(a.totalFinal)}
+                </p>
               </div>
             </div>
             {a.savingsByMonth.length > 0 ? (
@@ -236,7 +248,16 @@ export default function SupplyChainAnalyticsPage() {
                     width={70}
                   />
                   <Tooltip
-                    formatter={(v) => [formatNaira(Number(v)), "Savings"]}
+                    // The bars plot ₦ (the primary book currency); any $
+                    // savings in the same month ride along in the tooltip.
+                    formatter={(v, _name, item) => {
+                      const usd = (item?.payload as { usd?: number })?.usd ?? 0;
+                      return [
+                        formatNaira(Number(v)) +
+                          (usd !== 0 ? ` + ${formatUsd(usd)}` : ""),
+                        "Savings",
+                      ];
+                    }}
                     contentStyle={{
                       backgroundColor: "hsl(var(--card))",
                       borderColor: "hsl(var(--border))",
@@ -245,7 +266,7 @@ export default function SupplyChainAnalyticsPage() {
                     }}
                   />
                   <Bar
-                    dataKey="savings"
+                    dataKey="ngn"
                     fill="hsl(var(--accent))"
                     radius={[4, 4, 0, 0]}
                     maxBarSize={36}
@@ -290,14 +311,12 @@ export default function SupplyChainAnalyticsPage() {
                         {b.projectCount} project{b.projectCount === 1 ? "" : "s"}
                       </p>
                     </div>
-                    <p
-                      className={
-                        "shrink-0 text-sm font-semibold " +
-                        (b.totalSavings >= 0 ? "text-success" : "text-destructive")
-                      }
-                    >
-                      {formatNaira(b.totalSavings)}
-                    </p>
+                    <DualMoney
+                      ngn={b.savingsNgn}
+                      usd={b.savingsUsd !== 0 ? b.savingsUsd : undefined}
+                      signed
+                      className="shrink-0 items-end text-sm font-semibold"
+                    />
                   </li>
                 ))}
               </ol>
@@ -320,7 +339,7 @@ export default function SupplyChainAnalyticsPage() {
                     <div className="mb-1 flex items-baseline justify-between text-sm">
                       <span className="font-medium capitalize">{m.method}</span>
                       <span className="text-xs text-muted-foreground">
-                        {m.count} · {formatNairaCompact(m.budgeted)} budgeted
+                        {m.count} · {formatPairCompact(m.budgeted)} budgeted
                       </span>
                     </div>
                     <div className="h-2 overflow-hidden rounded-full bg-secondary">
@@ -431,7 +450,7 @@ export default function SupplyChainAnalyticsPage() {
                         {v.name}
                       </Link>
                       <span className="text-xs text-muted-foreground">
-                        {v.projectCount} · {formatNairaCompact(v.totalValue)}
+                        {v.projectCount} · {formatPairCompact(v.totalValue)}
                       </span>
                     </li>
                   ))}
