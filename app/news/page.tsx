@@ -2,10 +2,11 @@
 
 import * as React from "react";
 import { formatDistanceToNow, format } from "date-fns";
-import { ExternalLink, RefreshCw, Newspaper } from "lucide-react";
+import { ExternalLink, RefreshCw, Newspaper, Search } from "lucide-react";
 import { PageHeader, ErrorState, EmptyState, DemoBadge } from "@/components/common";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ export default function NewsPage() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
   const [filter, setFilter] = React.useState<"All" | NewsCategory>("All");
+  const [query, setQuery] = React.useState("");
 
   const load = React.useCallback(async (refresh = false) => {
     setLoading(true);
@@ -46,15 +48,21 @@ export default function NewsPage() {
     void load();
   }, [load]);
 
+  const q = query.trim().toLowerCase();
   const items = (data?.items ?? []).filter(
-    (i) => filter === "All" || i.categories.includes(filter)
+    (i) =>
+      (filter === "All" || i.categories.includes(filter)) &&
+      (q === "" ||
+        i.title.toLowerCase().includes(q) ||
+        i.description?.toLowerCase().includes(q) ||
+        i.source.toLowerCase().includes(q))
   );
 
   return (
     <div>
       <PageHeader
         title="Industry Updates"
-        description="Nigerian oil & gas news first, then global market headlines — from Nigerian outlets, NewsAPI, OilPrice.com and EIA feeds."
+        description="Nigerian oil & gas news first, then global market headlines — from Nigerian outlets, Africa Oil+Gas Report, NewsAPI, OilPrice.com and EIA feeds."
       >
         {data?.isMock && <DemoBadge />}
         <Button
@@ -67,6 +75,17 @@ export default function NewsPage() {
           Refresh
         </Button>
       </PageHeader>
+
+      <div className="relative mb-4 sm:max-w-md">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search headlines by keyword or source"
+          className="pl-9"
+          aria-label="Search headlines"
+        />
+      </div>
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
@@ -98,7 +117,11 @@ export default function NewsPage() {
         </div>
       ) : items.length === 0 ? (
         <EmptyState
-          message="No headlines match this filter right now."
+          message={
+            q
+              ? `No headlines match “${query.trim()}” right now.`
+              : "No headlines match this filter right now."
+          }
           icon={<Newspaper className="h-8 w-8 text-muted-foreground" />}
         />
       ) : (

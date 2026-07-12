@@ -6,6 +6,8 @@
  *    dedicated Nigeria oil & gas query.
  *  - BusinessDay Nigeria and The Guardian Nigeria energy RSS feeds (no key) —
  *    dedicated Nigerian coverage.
+ *  - Africa Oil+Gas Report RSS feed (no key) — Lagos-based, Africa-wide
+ *    upstream/midstream coverage with strong Nigerian focus.
  *  - OilPrice.com RSS feed (no key).
  *  - EIA "Today in Energy" RSS feed (no key).
  *
@@ -39,6 +41,10 @@ const RSS_FEEDS: Array<{ url: string; source: string; nigeriaFocus?: boolean }> 
     url: "https://guardian.ng/category/energy/feed/",
     source: "The Guardian Nigeria",
     nigeriaFocus: true,
+  },
+  {
+    url: "https://africaoilgasreport.com/feed/",
+    source: "Africa Oil+Gas Report",
   },
   { url: "https://oilprice.com/rss/main", source: "OilPrice.com" },
   {
@@ -120,8 +126,12 @@ async function fetchNewsApi(apiKey: string, query: string): Promise<NewsItem[]> 
 async function fetchRss(): Promise<NewsItem[]> {
   const parser = new Parser({
     timeout: 10_000,
-    // Some Nigerian outlets reject default library user agents.
-    headers: { "User-Agent": "Mozilla/5.0 (compatible; CommercialOpsDashboard/1.0)" },
+    // Some outlets (Africa Oil+Gas Report, some Nigerian papers) reject
+    // non-browser user agents with a 403, so present a full browser UA.
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+    },
   });
   const results = await Promise.allSettled(
     RSS_FEEDS.map(async ({ url, source, nigeriaFocus }) => {
