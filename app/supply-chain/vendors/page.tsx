@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Building2, Eye, Pencil, Plus, Search, Star, Trash2 } from "lucide-react";
+import { Building2, Copy, Eye, Pencil, Plus, Search, Star, Trash2, X } from "lucide-react";
 import { PageHeader, EmptyState, ErrorState } from "@/components/common";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,12 @@ import {
 import { VendorDialog } from "@/components/supply-chain/vendor-dialog";
 import { ConfirmDialog } from "@/components/supply-chain/confirm-dialog";
 import {
+  ExcelMenu,
+  cellOption,
+  cellStr,
+  type TemplateColumn,
+} from "@/components/supply-chain/excel-menu";
+import {
   VENDOR_CATEGORIES,
   VENDOR_STATUSES,
 } from "@/lib/supply-chain/validation";
@@ -40,6 +46,55 @@ import type { VendorWithStats } from "@/types";
 
 const ALL = "__all__";
 type SortKey = "name" | "projects" | "confidence";
+
+const IMPORT_COLUMNS: TemplateColumn[] = [
+  { key: "name", example: "Acme Energy Services Ltd", required: true },
+  { key: "rcNumber", example: "RC123456" },
+  { key: "contactPerson", example: "Ada Obi" },
+  { key: "email", example: "ada.obi@acme-energy.com" },
+  { key: "phone", example: "+234 801 234 5678" },
+  { key: "address", example: "12 Marina Road, Lagos Island" },
+  { key: "state", example: "Lagos", notes: "Nigerian state." },
+  {
+    key: "category",
+    example: "Procurement and Supply",
+    required: true,
+    notes: `One of: ${VENDOR_CATEGORIES.join(" | ")}`,
+  },
+  {
+    key: "nigerianEquityPercentage",
+    example: 60,
+    notes: "0–100. 51%+ marks an indigenous company.",
+  },
+  { key: "deliveryScore", example: 4, notes: "0–5." },
+  { key: "qualityScore", example: 4.5, notes: "0–5." },
+  { key: "hseScore", example: 4, notes: "0–5." },
+  { key: "complianceScore", example: 5, notes: "0–5." },
+  {
+    key: "status",
+    example: "active",
+    notes: `One of: ${VENDOR_STATUSES.join(" | ")}. Defaults to active.`,
+  },
+  { key: "notes", example: "" },
+];
+
+/** Write text to the clipboard, falling back to execCommand for HTTP contexts. */
+async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    ta.remove();
+    return ok;
+  }
+}
 
 function DocumentHealth({ vendor }: { vendor: VendorWithStats }) {
   const { total, expired, expiringSoon } = vendor.documentCounts;
@@ -74,6 +129,7 @@ export default function VendorsPage() {
   const [editing, setEditing] = React.useState<VendorWithStats | null>(null);
   const [toDelete, setToDelete] = React.useState<VendorWithStats | null>(null);
   const [deleting, setDeleting] = React.useState(false);
+  const [selected, setSelected] = React.useState<Set<string>>(new Set());
 
   const load = React.useCallback(async () => {
     setLoading(true);
@@ -86,6 +142,11 @@ export default function VendorsPage() {
       };
       if (!res.ok || !data.vendors) throw new Error(data.error);
       setVendors(data.vendors);
+      // Drop selections that no longer exist (e.g. after a delete).
+      setSelected((prev) => {
+        const ids = new Set(data.vendors!.map((v) => v.id));
+        return new Set(Array.from(prev).filter((id) => ids.has(id)));
+      });
     } catch (e) {
       setError(e instanceof Error && e.message ? e.message : "Could not load vendors.");
     } finally {
@@ -109,6 +170,87 @@ export default function VendorsPage() {
       }
       return a.name.localeCompare(b.name);
     });
+
+  const allFilteredSelected =
+    filtered.length > 0 && filtered.every((v) => selected.has(v.id));
+  const someFilteredSelected = filtered.some((v) => selected.has(v.id));
+
+  function toggleOne(id: string, checked: boolean) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  }
+
+  function toggleAllFiltered(checked: boolean) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      for (const v of filtered) {
+        if (checked) next.add(v.id);
+        else next.delete(v.id);
+      }
+      return next;
+    });
+  }
+
+  async function copySelectedEmails() {
+    const chosen = vendors.filter((v) => selected.has(v.id));
+    const emails = Array.from(
+      new Set(
+        chosen
+          .map((v) => v.email?.trim() ?? "")
+          .filter((e) => e.length > 0)
+      )
+    );
+    const missing = chosen.length - emails.length;
+    if (emails.length === 0) {
+      toast.error("None of the selected vendors has an email address.");
+      return;
+    }
+    const ok = await copyToClipboard(emails.join(", "));
+    if (!ok) {
+      toast.error("Could not access the clipboard.");
+      return;
+    }
+    toast.success(
+      `Copied ${emails.length} email${emails.length === 1 ? "" : "s"} to the clipboard.`,
+      {
+        description:
+          missing > 0
+            ? `${missing} selected vendor${missing === 1 ? " has" : "s have"} no email and ${missing === 1 ? "was" : "were"} skipped.`
+            : undefined,
+      }
+    );
+  }
+
+  async function importVendorRow(row: Record<string, unknown>) {
+    const payload = {
+      name: cellStr(row.name),
+      rcNumber: cellStr(row.rcNumber) || undefined,
+      contactPerson: cellStr(row.contactPerson) || undefined,
+      email: cellStr(row.email) || undefined,
+      phone: cellStr(row.phone) || undefined,
+      address: cellStr(row.address) || undefined,
+      state: cellStr(row.state) || undefined,
+      category: cellOption(row.category, VENDOR_CATEGORIES),
+      nigerianEquityPercentage: row.nigerianEquityPercentage,
+      deliveryScore: row.deliveryScore,
+      qualityScore: row.qualityScore,
+      hseScore: row.hseScore,
+      complianceScore: row.complianceScore,
+      status: cellOption(row.status, VENDOR_STATUSES) || "active",
+      notes: cellStr(row.notes) || undefined,
+    };
+    const res = await fetch("/api/supply-chain/vendors", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = (await res.json().catch(() => ({}))) as { error?: string };
+    if (!res.ok) throw new Error(data.error ?? "Import failed.");
+  }
 
   async function confirmDelete() {
     if (!toDelete) return;
@@ -135,6 +277,13 @@ export default function VendorsPage() {
         title="Vendors"
         description="Contractors and suppliers, their documents and performance."
       >
+        <ExcelMenu
+          entity="vendors"
+          fileName="vendors-template.xlsx"
+          columns={IMPORT_COLUMNS}
+          importRow={importVendorRow}
+          onImported={() => void load()}
+        />
         <Button
           onClick={() => {
             setEditing(null);
@@ -189,6 +338,28 @@ export default function VendorsPage() {
             </div>
           </div>
 
+          {selected.size > 0 && (
+            <div className="mb-4 flex flex-wrap items-center gap-2 rounded-md border bg-secondary/40 px-3 py-2">
+              <span className="text-sm font-medium">
+                {selected.size} vendor{selected.size === 1 ? "" : "s"} selected
+              </span>
+              <div className="ml-auto flex items-center gap-2">
+                <Button size="sm" onClick={() => void copySelectedEmails()}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  Copy emails
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setSelected(new Set())}
+                >
+                  <X className="mr-2 h-4 w-4" />
+                  Clear
+                </Button>
+              </div>
+            </div>
+          )}
+
           {loading ? (
             <div className="space-y-2">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -211,6 +382,21 @@ export default function VendorsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-10">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 cursor-pointer accent-primary"
+                        aria-label="Select all vendors"
+                        checked={allFilteredSelected}
+                        ref={(el) => {
+                          if (el) {
+                            el.indeterminate =
+                              someFilteredSelected && !allFilteredSelected;
+                          }
+                        }}
+                        onChange={(e) => toggleAllFiltered(e.target.checked)}
+                      />
+                    </TableHead>
                     <TableHead>
                       <SortButton label="Vendor" active={sortKey === "name"} onClick={() => setSortKey("name")} />
                     </TableHead>
@@ -233,7 +419,17 @@ export default function VendorsPage() {
                       key={v.id}
                       className="cursor-pointer"
                       onClick={() => router.push(`/supply-chain/vendors/${v.id}`)}
+                      data-state={selected.has(v.id) ? "selected" : undefined}
                     >
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 cursor-pointer accent-primary"
+                          aria-label={`Select ${v.name}`}
+                          checked={selected.has(v.id)}
+                          onChange={(e) => toggleOne(v.id, e.target.checked)}
+                        />
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{v.name}</span>
