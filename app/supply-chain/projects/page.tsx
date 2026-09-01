@@ -34,7 +34,17 @@ import {
 import { ProjectStatusBadge } from "@/components/supply-chain/badges";
 import { ProjectDialog } from "@/components/supply-chain/project-dialog";
 import { DualMoney } from "@/components/supply-chain/dual-money";
-import { PROJECT_STATUSES } from "@/lib/supply-chain/validation";
+import {
+  ExcelMenu,
+  cellDate,
+  cellOption,
+  cellStr,
+  type TemplateColumn,
+} from "@/components/supply-chain/excel-menu";
+import {
+  PROCUREMENT_METHODS,
+  PROJECT_STATUSES,
+} from "@/lib/supply-chain/validation";
 import type {
   Buyer,
   SupplyProjectStatus,
@@ -43,6 +53,55 @@ import type {
 } from "@/types";
 
 const ALL = "__all__";
+
+const IMPORT_COLUMNS: TemplateColumn[] = [
+  { key: "title", example: "Supply of drilling mud chemicals", required: true },
+  { key: "referenceNumber", example: "PRJ-2026-001", required: true },
+  { key: "description", example: "Annual call-off contract" },
+  {
+    key: "buyerEmail",
+    example: "chinedu.okeke@company.com",
+    required: true,
+    notes: "Email of an existing buyer — create the buyer first.",
+  },
+  {
+    key: "vendorName",
+    example: "Acme Energy Services Ltd",
+    notes: "Exact name of an existing vendor. Leave blank if unassigned.",
+  },
+  {
+    key: "procurementMethod",
+    example: "open competitive bidding",
+    required: true,
+    notes: `One of: ${PROCUREMENT_METHODS.join(" | ")}`,
+  },
+  {
+    key: "budgetedCostNgn",
+    example: 25000000,
+    notes: "Required if no $ budget. Plain number, no currency symbol.",
+  },
+  {
+    key: "budgetedCostUsd",
+    example: "",
+    notes: "Required if no ₦ budget. Plain number, no currency symbol.",
+  },
+  { key: "finalCostNgn", example: 23500000, notes: "Leave blank until known." },
+  { key: "finalCostUsd", example: "", notes: "Leave blank until known." },
+  {
+    key: "startDate",
+    example: "2026-01-15",
+    required: true,
+    notes: "yyyy-mm-dd, or an Excel date cell.",
+  },
+  {
+    key: "endDate",
+    example: "2026-06-30",
+    required: true,
+    notes: "Planned completion. Must be after the start date.",
+  },
+  { key: "actualCompletionDate", example: "", notes: "yyyy-mm-dd when completed." },
+  { key: "nigerianContentPercentage", example: 70, notes: "0–100." },
+];
 
 function isStatus(v: string | null): v is SupplyProjectStatus {
   return (PROJECT_STATUSES as readonly string[]).includes(v ?? "");
@@ -126,12 +185,64 @@ function ProjectsPageInner() {
 
   const openProject = (id: string) => router.push(`/supply-chain/projects/${id}`);
 
+  async function importProjectRow(row: Record<string, unknown>) {
+    const buyerEmail = cellStr(row.buyerEmail).toLowerCase();
+    if (!buyerEmail) throw new Error("buyerEmail is required.");
+    const buyer = buyers.find((b) => b.email.toLowerCase() === buyerEmail);
+    if (!buyer) {
+      throw new Error(`No buyer with email "${buyerEmail}". Create the buyer first.`);
+    }
+
+    let vendorId: string | undefined;
+    const vendorName = cellStr(row.vendorName);
+    if (vendorName) {
+      const vendor = vendors.find(
+        (v) => v.name.toLowerCase() === vendorName.toLowerCase()
+      );
+      if (!vendor) {
+        throw new Error(`No vendor named "${vendorName}". Create the vendor first.`);
+      }
+      vendorId = vendor.id;
+    }
+
+    const payload = {
+      title: cellStr(row.title),
+      referenceNumber: cellStr(row.referenceNumber),
+      description: cellStr(row.description) || undefined,
+      buyerId: buyer.id,
+      vendorId,
+      procurementMethod: cellOption(row.procurementMethod, PROCUREMENT_METHODS),
+      budgetedCostNgn: row.budgetedCostNgn,
+      budgetedCostUsd: row.budgetedCostUsd,
+      finalCostNgn: row.finalCostNgn,
+      finalCostUsd: row.finalCostUsd,
+      startDate: cellDate(row.startDate),
+      endDate: cellDate(row.endDate),
+      actualCompletionDate: cellDate(row.actualCompletionDate) || undefined,
+      nigerianContentPercentage: row.nigerianContentPercentage,
+    };
+    const res = await fetch("/api/supply-chain/projects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = (await res.json().catch(() => ({}))) as { error?: string };
+    if (!res.ok) throw new Error(data.error ?? "Import failed.");
+  }
+
   return (
     <div>
       <PageHeader
         title="Projects"
         description="Procurement projects, their vendors, buyers and cost performance."
       >
+        <ExcelMenu
+          entity="projects"
+          fileName="projects-template.xlsx"
+          columns={IMPORT_COLUMNS}
+          importRow={importProjectRow}
+          onImported={() => void load()}
+        />
         <Button onClick={() => setDialogOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           New Project

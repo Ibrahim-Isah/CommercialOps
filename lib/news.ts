@@ -152,6 +152,7 @@ async function fetchRss(): Promise<NewsItem[]> {
       });
     })
   );
+  
   return results
     .filter((r) => r.status === "fulfilled")
     .flatMap((r) => (r as PromiseFulfilledResult<NewsItem[]>).value);

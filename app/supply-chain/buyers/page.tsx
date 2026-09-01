@@ -21,9 +21,38 @@ import {
 import { BuyerDialog } from "@/components/supply-chain/buyer-dialog";
 import { ConfirmDialog } from "@/components/supply-chain/confirm-dialog";
 import { DualMoney } from "@/components/supply-chain/dual-money";
+import {
+  ExcelMenu,
+  cellStr,
+  type TemplateColumn,
+} from "@/components/supply-chain/excel-menu";
 import type { BuyerWithStats } from "@/types";
 
 type SortKey = "name" | "projects" | "savings";
+
+const IMPORT_COLUMNS: TemplateColumn[] = [
+  { key: "fullName", example: "Chinedu Okeke", required: true },
+  {
+    key: "email",
+    example: "chinedu.okeke@company.com",
+    required: true,
+    notes: "Must be unique per buyer.",
+  },
+];
+
+async function importBuyerRow(row: Record<string, unknown>) {
+  const payload = {
+    fullName: cellStr(row.fullName),
+    email: cellStr(row.email),
+  };
+  const res = await fetch("/api/supply-chain/buyers", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = (await res.json().catch(() => ({}))) as { error?: string };
+  if (!res.ok) throw new Error(data.error ?? "Import failed.");
+}
 
 export default function BuyersPage() {
   const router = useRouter();
@@ -102,6 +131,13 @@ export default function BuyersPage() {
         title="Buyers"
         description="Procurement staff, the projects they handle and the savings they deliver."
       >
+        <ExcelMenu
+          entity="buyers"
+          fileName="buyers-template.xlsx"
+          columns={IMPORT_COLUMNS}
+          importRow={importBuyerRow}
+          onImported={() => void load()}
+        />
         <Button
           onClick={() => {
             setEditing(null);
