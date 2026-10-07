@@ -433,6 +433,233 @@ export interface SupplyChainAnalytics {
 }
 
 // ---------------------------------------------------------------------------
+// Grievances — local stakeholders grievance mechanism (OPI SXD 001/OERNL r01)
+// ---------------------------------------------------------------------------
+
+/** Case severity per the OPI classification (§6.3). */
+export type GrievanceSeverity = "Low" | "Medium" | "High";
+
+/** Areas of concern covered by the mechanism (§3, Scope of Application). */
+export type GrievanceCategory =
+  | "Environmental Concerns"
+  | "Gas Flaring"
+  | "Land Degradation"
+  | "Community Displacement"
+  | "Cultural Heritage"
+  | "Compensation"
+  | "Local Employment"
+  | "Community Development Projects"
+  | "Community Recognition"
+  | "Delayed Payments";
+
+/** Nature of complaint (Annex A.3 Grievance Register list). */
+export type GrievanceNature =
+  | "Encroachment"
+  | "Flooding"
+  | "Blasting (noise, vibration)"
+  | "Soil erosion"
+  | "Oil spill"
+  | "Access road"
+  | "Land acquisition"
+  | "Material transportation and use"
+  | "Water pollution"
+  | "Gas flaring"
+  | "MoUs"
+  | "Property damage (farmland, assets)"
+  | "Other";
+
+/** Who lodges the grievance (§3: individual and collective grievances). */
+export type GrievanceComplainantType = "Individual" | "Group" | "Community";
+
+/** Approved submission channels (§6.2). */
+export type GrievanceChannel =
+  | "Email"
+  | "Written Letter"
+  | "Phone Call"
+  | "SMS"
+  | "WhatsApp"
+  | "In-Person Engagement"
+  | "Office Visit";
+
+/** Operational jurisdiction where the grievance is registered (§6.2). */
+export type GrievanceArea = "Land Area" | "Swamp Area" | "Port Harcourt Office";
+
+/**
+ * Where the case sits in the grievance mechanism process (Figure 1):
+ * Receive & Register → Acknowledge → Assess & Assign → Investigate →
+ * Respond → Follow-Up & Close (with recourse/appeal to the GRC alongside).
+ */
+export type GrievanceStep =
+  | "Receive & Register"
+  | "Acknowledge"
+  | "Assess & Assign"
+  | "Investigate"
+  | "Respond"
+  | "Follow-Up & Close";
+
+export const GRIEVANCE_STEPS: GrievanceStep[] = [
+  "Receive & Register",
+  "Acknowledge",
+  "Assess & Assign",
+  "Investigate",
+  "Respond",
+  "Follow-Up & Close",
+];
+
+/** Lifecycle state of the case (register flags: On-going / Pending / Resolved / Abandoned). */
+export type GrievanceStatus = "Open" | "Resolved" | "Closed" | "Abandoned";
+
+/** How the grievance was resolved (§6.6 resolution levels + GRC recourse). */
+export type GrievanceResolutionType =
+  | "Rapid Response"
+  | "First-Level Resolution"
+  | "GRC Resolution"
+  | "External Redress";
+
+/** Grounds on which a case is closed out (§6.6 close-out). */
+export type GrievanceClosureType =
+  | "Complainant Sign-Off"
+  | "External Redress"
+  | "Abandoned";
+
+export interface Grievance {
+  id: string;
+  /** Serial no. of the Grievance Register, e.g. GRV-2026-0001. */
+  referenceNumber: string;
+  title: string;
+  description?: string;
+  category: GrievanceCategory;
+  nature: GrievanceNature;
+  severity: GrievanceSeverity;
+  /** §6.3 high-severity human-rights cases (violence, intimidation, harm to women/girls…). */
+  humanRightsRelated: boolean;
+  /** §6.2 sensitive grievances — immediately notified to XMD / GMD. */
+  sensitive: boolean;
+  complainantName: string;
+  complainantType: GrievanceComplainantType;
+  complainantContact?: string;
+  /** Group or body the complainant belongs to (CDC, women's group, youth body…). */
+  stakeholderGroup?: string;
+  state?: string;
+  lga?: string;
+  community?: string;
+  area: GrievanceArea;
+  medium: GrievanceChannel;
+  /** Date the grievance occurred / was raised (yyyy-mm-dd). */
+  dateOfComplaint: string;
+  /** Date of receipt by Company personnel (yyyy-mm-dd). */
+  dateReceived: string;
+  registeringOfficer: string;
+  /** Attached documentation (stamped copies, photos, letters…). */
+  documentation?: string;
+  responsibleDepartment?: string;
+  /** Assigned Grievance Owner. */
+  responsiblePerson?: string;
+  /** Action to be done. */
+  actionRequired?: string;
+  /** Target date for resolution ("Duration" of the register). */
+  targetResolutionDate?: string;
+  /** Resolved on receipt via rapid response, without full investigation. */
+  rapidResponse: boolean;
+  litigation: boolean;
+  step: GrievanceStep;
+  status: GrievanceStatus;
+  resolutionType?: GrievanceResolutionType;
+  resolutionNotes?: string;
+  resolvedDate?: string;
+  closureType?: GrievanceClosureType;
+  closureNotes?: string;
+  closedDate?: string;
+  remarks?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Grievance enriched with read-time derivations for lists and alerts. */
+export interface GrievanceWithMeta extends Grievance {
+  /** Past the target resolution date and not yet resolved/closed/abandoned. */
+  overdue: boolean;
+  daysToTarget?: number;
+  /** Days from receipt to resolution; open cases measure to today. */
+  daysOpen: number;
+}
+
+/** Registration fields accepted by create / update endpoints. */
+export interface GrievanceInput {
+  title: string;
+  description?: string;
+  category: GrievanceCategory;
+  nature: GrievanceNature;
+  severity: GrievanceSeverity;
+  humanRightsRelated: boolean;
+  sensitive: boolean;
+  complainantName: string;
+  complainantType: GrievanceComplainantType;
+  complainantContact?: string;
+  stakeholderGroup?: string;
+  state?: string;
+  lga?: string;
+  community?: string;
+  area: GrievanceArea;
+  medium: GrievanceChannel;
+  dateOfComplaint: string;
+  dateReceived: string;
+  registeringOfficer: string;
+  documentation?: string;
+  responsibleDepartment?: string;
+  responsiblePerson?: string;
+  actionRequired?: string;
+  targetResolutionDate?: string;
+  remarks?: string;
+}
+
+export type GrievanceEventType =
+  | "registered"
+  | "acknowledged"
+  | "assigned"
+  | "step-change"
+  | "engagement"
+  | "reminder"
+  | "escalation"
+  | "response"
+  | "resolution"
+  | "closure"
+  | "note";
+
+/** Audit-trail row: every action taken on a case (§7 traceability). */
+export interface GrievanceEvent {
+  id: string;
+  grievanceId: string;
+  type: GrievanceEventType;
+  note?: string;
+  actor?: string;
+  createdAt: string;
+}
+
+/** Aggregates for the quarterly monitoring & reporting review (§6.8). */
+export interface GrievanceAnalytics {
+  total: number;
+  statusCounts: Record<GrievanceStatus, number>;
+  severityCounts: Record<GrievanceSeverity, number>;
+  openHighSeverity: number;
+  overdue: number;
+  /** Cases resolved on receipt through rapid response. */
+  rapidResponseCount: number;
+  litigationCount: number;
+  avgDaysToResolution: number | null;
+  byCategory: Array<{
+    category: GrievanceCategory;
+    total: number;
+    open: number;
+    resolved: number;
+  }>;
+  byNature: Array<{ nature: GrievanceNature; total: number }>;
+  byArea: Array<{ area: GrievanceArea; total: number; open: number }>;
+  /** Received vs resolved per month (yyyy-mm), oldest first. */
+  monthly: Array<{ month: string; received: number; resolved: number }>;
+}
+
+// ---------------------------------------------------------------------------
 // Generic API envelope
 // ---------------------------------------------------------------------------
 export interface ApiError {

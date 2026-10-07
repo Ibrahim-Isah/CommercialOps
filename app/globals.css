@@ -42,6 +42,13 @@
     --ring: 222 47% 30%;
 
     --radius: 0.5rem;
+
+    /* Chart series colors (dataviz-validated against the light surface). */
+    --chart-1: #2a78d6; /* series 1 / sequential hue */
+    --chart-2: #eb6834; /* series 2 */
+    --chart-ordinal-1: #86b6ef; /* severity ramp, light */
+    --chart-ordinal-2: #3987e5;
+    --chart-ordinal-3: #184f95;
   }
 
   .dark {
@@ -79,6 +86,13 @@
     --border: 217 33% 20%;
     --input: 217 33% 22%;
     --ring: 213 27% 70%;
+
+    /* Chart series colors (dataviz-validated against the dark surface). */
+    --chart-1: #3987e5;
+    --chart-2: #d95926;
+    --chart-ordinal-1: #9ec5f4;
+    --chart-ordinal-2: #5598e7;
+    --chart-ordinal-3: #256abf;
   }
 }
 

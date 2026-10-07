@@ -1,0 +1,1123 @@
+     Operating Instruction
+
+   Handling
+     Local
+
+Stakeholders'
+ Grievances
+OPI| Handling Stakeholders Grievances
+
+    TITLE:
+     Handling Local Stakeholders' Grievances (OERNL).
+
+NOTES:
+
+This Operating Instruction sets out the official guidelines governing the implementation and management of the
+Grievance Mechanism within OERNL's operational and community engagement framework.
+Operating Instruction on Handling Local Stakeholders Grievances SXD 001/ OERNL r01
+
+ISSUE DATE:                                                     EFFECTIVE DATE:
+ August 10, 2025                                              August 10, 2025
+
+ PREPARED BY:               CHECKED BY:                        APPROVED BY:
+
+Stakeholders Management  Division Manager                     General Manager
+Manager (XMM)            Stakeholders Management &            Security, Government &
+                         Community Development (XMD)          External Relations
+
+This document is the property of Oando. All rights reserved.                                                    2
+OPI| Handling Stakeholders Grievances
+
+INDEX
+
+1. INTRODUCTION                                               4
+
+2. OBJECTIVE                                                  5
+
+3. SCOPE OF APPLICATION                                       6
+
+4. REFERENCES                                                 7
+
+4.1 Internal References
+4.2 External References
+
+5. DEFINITIONS, ABBREVIATIONS AND ACRONYMS                    9
+
+6. ACTIVITIES AND OPERATING PRACTICES                         13
+
+6.1 General Principles
+6.2 Grievance Process and Timing
+6.3 Grievance classification
+6.4 Local Stakeholder Analysis and Prioritization
+6.5 Critical, Strategic, Intermediate and Marginal Stakeholders
+6.6 Grievance Mechanism Process Steps
+6.7 Roles and Responsibilities
+
+   6.7.1 Grievance Coordinator
+   6.7.2 Community Investment and Sustainability Relations
+   6.7.3 General Manager District
+   6.7.4 The Stakeholders Management & Community Development Division Manager (XMD)
+   6.7.5 Grievance Owner (XM and LNM)
+   6.7.6 Community Relations Officer
+   6.7.7 Grievance Officers
+6.8 Monitoring and Reporting
+   6.8.1 Periodic Review of the Grievance Mechanism
+
+7. DOCUMENT STORAGE & TRACEABILITY                            30
+
+8. DOCUMENT UPDATING                                          31
+
+9. LIST OF ANNEXES                                            32
+
+This document is the property of Oando. All rights reserved.                         3
+OPI| Handling Stakeholders Grievances
+
+  1. INTRODUCTION
+
+                This Operating Instruction sets out the official guidelines governing
+                the implementation and management of the Grievance Mechanism
+                within OERNL's operational and community engagement framework.
+                It replaces any prior versions that referenced ENI systems or local
+                operating instructions and applies across all OERNL operational
+                areas.
+
+This document is the property of Oando. All rights reserved.                           4
+OPI| Handling Stakeholders Grievances
+
+  2. OBJECTIVES
+
+                 The objective of this Operating Instruction is to provide a structured
+                 mechanism for the effective management and resolution of concerns
+                 or complaints that may arise between OERNL and local stakeholders
+                 in the company's operational areas. It aims to promote transparency,
+                 fairness, and consistency in addressing grievances while minimizing
+                 risks to the Company's reputation and maintaining positive
+                 community relations.
+
+                 An effectively implemented grievance mechanism will support the
+                 company by:
+
+                  · defining an effective stakeholder engagement strategy for
+                       addressing grievance and concerns arising from our impacts
+                       caused by company's operations or contractors working for the
+                       company;
+
+                  · maintaining social acceptance from local stakeholders by
+                       demonstrating that the company takes community concerns
+                       seriously.
+
+                  · addressing grievances arising from the environmental, social and
+                       health impacts of company's operations and the risks associated
+                       with projects;
+
+                  · assuring company's compliance with National and International
+                       environmental and social standards; and
+
+                  · assisting the company in fulfilling its responsibility to respect human
+                      rights and promote shared prosperity.
+
+This document is the property of Oando. All rights reserved.                                 5
+OPI| Handling Stakeholders Grievances
+
+  3. SCOPE OF APPLICATION
+
+              This Operating Instruction applies to all grievances raised by individuals,
+              groups, or communities affected by OERNL operations. It covers both individual
+              and collective grievances and provides a fair, transparent, and accessible
+              process for their management.
+
+              Grievances excluded from this procedure include matters related to internal
+              labour, employee welfare, or procurement processes, which shall be addressed
+              through their respective company procedures.
+
+              The grievance mechanism shall cover, but is not limited to, the following areas
+              of concern:
+
+                             1. Environmental Concerns: Complaints arising from oil spills or
+                                 contamination of land and water bodies, including those affecting
+                                 agriculture, fishing, and community health, as well as grievances
+                                 over non-payment of relief materials to affected communities.
+
+                             2. Gas Flaring: Issues relating to the health and environmental
+                                 impacts of gas flaring, including air pollution and its contribution
+                                 to climate change.
+
+                             3. Land Degradation: Complaints concerning deforestation, soil
+                                 erosion, or loss of land quality linked to OERNL's operations.
+
+                             4. Community Displacement: Grievances related to displacement
+                                 or resettlement of communities due to land acquisition for oil and
+                                 gas infrastructure.
+
+                             5. Cultural Heritage: Concerns regarding impacts on cultural sites,
+                                 traditions, and practices affected by OERNL's operational
+                                 activities.
+
+                             6. Compensation: Disputes over adequacy, timeliness, or fairness
+                                 of compensation for land use, environmental damage, or other
+                                 community losses.
+
+                             7. Local Employment: Complaints regarding limited job
+                                 opportunities for host communities or perceived bias in hiring
+                                 practices favouring non-indigenes.
+
+                             8. Community Development Projects: Issues concerning the
+                                 delivery, quality, or fairness of community projects, including
+                                 exclusion from tender processes or denial of contract awards.
+
+This document is the property of Oando. All rights reserved.                                           6
+OPI| Handling Stakeholders Grievances
+
+                             9. Community Recognition: Grievances arising from the non-
+                                 recognition of a community, its Paramount Ruler, or Community
+                                 Development Committee (CDC).
+
+                             10. Delayed Payments: Complaints related to delays in payment to
+                                 community contractors or workers engaged in company-related
+                                 activities.
+
+This document is the property of Oando. All rights reserved.                                    7
+OPI| Handling Stakeholders Grievances
+
+4. REFERENCES
+
+         3.1 Internal references
+
+Ref.     Title
+[Ref.1]
+         Oando Code of Business Conduct & Ethics
+[Ref.2]  OPI on Sustainability Stakeholders Engagement SXD 001/OERNL r01
+
+3.2 External references
+
+Ref. Title
+
+[Ref.3] Constitution of the Federal Republic of Nigeria, 1999 (Amended)
+
+[Ref.4] ILO Declaration 169: "Indigenous and tribal Peoples Convention", 1989
+
+[Ref.5] UN "Guiding Principles on Business and Human rights: Implementing
+            the United Nations"Protect, Respect and Remedy" Framework", 2011
+
+[Ref.6] IPIECA "Operational Level Grievance Mechanism: Good Practice
+            Survey", 2012
+
+[Ref.7]  IPIECA "Community Grievance Mechanisms in the Oil and Gas Industry:
+         A manual for implementing operational level grievance mechanisms and
+         designing corporate frameworks.
+
+[Ref.8] EC "Oil & Gas Sector Guide on Implementing the UN Guiding
+
+         Principles on Business andHuman Rights", 2013
+
+[Ref.9] UN "The Corporate responsibility to respect Human Rights. An
+            Interpretive Guide", 2012
+
+This document is the property of Oando. All rights reserved.                   8
+OPI| Handling Stakeholders Grievances
+
+5. DEFINITIONS, ABBREVIATIONS AND
+     ACRONYMS
+
+          The following definitions and abbreviations shall apply in this Procedure:
+
+TERM                                   DEFINITION
+
+Complaint/Grievance                    Any concern, dissatisfaction, or perceived
+                                       harm expressed by an individual, group, or
+                                       community regarding the company's
+                                       activities, decisions, or omissions that have,
+                                       or are perceived to have, an adverse impact.
+
+Complainant                            Any individual, group, or community (or
+                                       recognized representative) who lodges a
+                                       formal or informal grievance seeking
+                                       resolution through the established
+                                       mechanism.
+
+Grievance                              A structured process for receiving, assessing,
+Mechanism                              investigating, responding to, and closing out
+                                       grievances from affected stakeholders in a fair
+                                       and consistent manner.
+
+Grievance Owner                        The department or function responsible for
+                                       managing and resolving grievance in
+                                       coordination with the Stakeholders
+                                       Management Division.
+
+SXD Shared Area                        The designated internal repository for
+                                       registering, tracking, and storing grievance
+                                       documentation in place of the former SMS
+                                       portal.
+
+This document is the property of Oando. All rights reserved.                            9
+OPI| Handling Stakeholders Grievances
+
+Human Rights                           The basic rights and freedoms inherent to all
+                                       individuals, which OERNL commits to respect,
+                                       protect, and uphold in its operations and
+                                       stakeholder engagements.
+
+Grievance Response A committee established to review, evaluate,
+
+Committee (GRC)                        and recommend appropriate resolutions for
+
+                                       grievances escalated beyond the initial
+
+                                       handling level.
+
+Grievance Officer                      The designated staff member responsible for
+                                       receiving, documenting, and managing
+                                       grievances in accordance with this Operating
+                                       Instruction.
+
+Grievance Log                          A centralized record containing all relevant
+                                       details of grievances received, actions taken,
+                                       and final resolutions.
+
+Central Sustainability The OERNL unit responsible for ensuring
+
+Function                               alignment of grievance management practices
+
+                                       with corporate sustainability objectives and
+
+                                       standards.
+
+Grievance                              The individual responsible for coordinating
+Coordinator                            grievance handling activities between
+                                       departments and ensuring consistency in
+                                       reporting.
+
+Action Department                      The designated unit, division, or department
+                                       responsible for investigating and resolving
+                                       grievances under the oversight of the
+                                       Grievance Coordinator and Division Manager
+                                       (XMD). It ensures that corrective and
+                                       preventive measures are implemented
+
+This document is the property of Oando. All rights reserved.                           10
+OPI| Handling Stakeholders Grievances
+
+                                       promptly and in compliance with this
+                                       Operating Instruction.
+
+Abandoned Case                         Refers to a complaint in which the complainant
+                                       fails to participate in further engagement with
+                                       designated company personnel after a
+                                       reasonable period following submission, and
+                                       all efforts to re-establish contact have been
+                                       unsuccessful. Such cases may be re-opened
+                                       upon the complainant's request, subject to
+                                       verification of identity and contact details, and
+                                       with the approval of the Grievance
+                                       Coordinator.
+
+Local Stakeholders                     Individuals, groups, or institutions within the
+                                       host communities directly or indirectly
+                                       affected by OERNL operations.
+
+Impact                                 Any positive or negative change resulting from
+                                       OERNL's activities that affect stakeholders,
+                                       the environment, or community well-being.
+
+Issues                                 Specific matters of concern or disagreement
+                                       raised by stakeholders that may evolve into
+                                       formal grievances if not addressed.
+
+Procedures                             and The established operational framework
+Mechanisms                                     defining how grievances are received,
+                                               assessed, resolved, and monitored.
+
+Rapid Response                         The initial action by the Grievance Officer,
+                                       under the oversight of the Grievance
+                                       Coordinator, to verify and promptly resolve
+                                       complaints that can be addressed immediately
+                                       upon receipt.
+
+This document is the property of Oando. All rights reserved.                              11
+OPI| Handling Stakeholders Grievances
+
+CI&SR                                  Community Investment & Sustainability
+                                       Relations
+CRO                                    Community Relations Officer
+DLG                                    District Legal Services Division
+GC                                     Grievance Coordinator
+GM                                     Grievance Mechanism
+GMD                                    General Manager, Base & District
+GM HCM                                 General Manager Human Capital Management
+CRO                                    Community Relations Officer
+DLG                                    District Legal Services Division
+EHSE                                   Health, Safety & Environment
+LNM                                    Lands Manager
+MD                                     Managing Director
+MoM                                    Minutes of Meeting
+OENRL                                  Oando Energy and Natural Resources Ltd.
+SXD                                    Stakeholders Management & Community
+                                       Development Division
+XMD                                    Stakeholders Management & Community
+                                       Development Division Manager
+XM LAR & SAR                           Stakeholders Management Land Area &
+                                       Swamp Area
+
+This document is the property of Oando. All rights reserved.                     12
+OPI| Handling Stakeholders Grievances
+
+6. Activities and Operating Practices
+
+         6.1 General Principles
+
+                 OERNL recognizes that oil and gas activities can impact communities
+                 socially and environmentally. A clear grievance mechanism builds trust and
+                 demonstrates accountability to stakeholders. The grievance process shall
+                 be accessible, legitimate, transparent, and based on continuous
+                 improvement and rights-compatibility.
+
+                 This grievance mechanism has been developed taking into account the
+                 following general principles, aligned with international best practices:
+
+                 a) Accessibility: The grievance process shall be made known and
+                         accessible to all local stakeholders, including those who may face
+                         challenges such as language barriers, literacy levels, financial
+                         constraints, distance, or fear of reprisal.
+
+                b) Continuous Improvement: The mechanism shall enable the
+                         Company to capture lessons learned, enhance performance, and
+                         prevent recurrence of similar grievances through adaptive
+                         management.
+
+                c) Engagement and dialogue: The procedure shall promote open
+                         communication and constructive dialogue with individuals and local
+                         stakeholders affected or likely to be affected by the Company's
+                         operations, seeking mutually agreeable solutions rather than
+                         unilateral actions.
+
+                d) Equitability: The mechanism shall ensure fair access to information,
+                         advice, and expertise required for balanced and equitable grievance
+                         resolution.
+
+                e) Legitimacy: The grievance structure shall be supported by clear
+                         governance and accountability frameworks that foster transparency
+                         and build stakeholder confidence.
+
+                f) Predictability: The mechanism shall offer clarity regarding process
+                         steps, expected timelines, and potential outcomes, along with a
+                         defined plan for monitoring implementation.
+
+                g) Rights-Compatibility: All outcomes and remedies arising from
+
+This document is the property of Oando. All rights reserved.                                  13
+OPI| Handling Stakeholders Grievances
+
+                             grievance assessments shall align with internationally recognized
+
+                             human rights standards.
+
+                    h) Transparency: The process and outcomes of the grievance
+                             mechanism shall be documented and communicated transparently to
+                             strengthen trust and community confidence.
+
+                     An effectively implemented grievance mechanism supports the Company
+                     by:
+
+                        · Defining an effective stakeholder engagement strategy;
+
+                        · Addressing concerns or impacts arising from operations;
+
+                        · Maintaining social acceptance and trust from local stakeholders;
+
+                        · Identifying and managing environmental, social, and health impacts
+                              and risks;
+
+                        · Ensuring compliance with national and international environmental
+                              and social standards; and
+
+                        · Supporting the Company in fulfilling its human rights obligations and
+                              promoting shared prosperity.
+
+  6.2 Grievance Process and Timing
+
+All grievances shall be handled with equal levels of integrity, confidentiality, and
+respect, in full compliance with this Operating Instruction.
+
+Where grievance is considered sensitive in nature, such as one that may disrupt
+operations, escalate community tensions, or carry material implications, the
+Grievance Owner or Grievance Coordinator shall immediately notify the Division
+Manager, Stakeholders Management & Community Development (XMD). Any
+grievance that may adversely affect OERNL's reputation at a national or
+international level shall be promptly escalated to Company Management through
+the General Manager, Base & District Management (GMD).
+
+The grievance resolution process formally begins when a complaint is registered
+with designated Company personnel within the relevant operational jurisdiction,
+namely:
+
+             · Land Area
+
+             · Swamp Area
+
+             · Port Harcourt Office
+
+This document is the property of Oando. All rights reserved.                                     14
+OPI| Handling Stakeholders Grievances
+
+          Stakeholders may submit grievances through any of the following channels:
+
+                  1. Dedicated grievance email:
+                      mbx.oernl.grievances@oandoenergyresources.com
+
+                  2. Written letters addressed to OERNL Management.
+                  3. Phone calls, SMS, or WhatsApp messages to designated Company
+
+                      personnel
+                  4. Physical submissions, including in-person complaints during stakeholder
+
+                      engagements or office visits
+           Company personnel shall encourage stakeholders to submit grievances through any of the
+           above-approved channels to ensure proper documentation, tracking, and resolution.
+
+             6.3 Grievance Classification
+                  Grievances received through the Company's Grievance Mechanism shall be
+                  classified according to their level of severity to ensure appropriate handling,
+                  escalation, and resolution. The categories are as follows:
+
+                  1. Low Severity:
+
+                  Grievances relating to incidents or damages, whether occurring, ongoing, or
+                  potential, that have a limited impact and can be independently verified by third
+                  parties. Examples include (non-exhaustive):
+
+                        · Minor damage to property or livelihood activities that does not impair
+                              overall usability or functionality (e.g., proven damage to private
+                              assets resulting from construction activities).
+
+                        · Alleged failure to comply with agreements or commitments made to
+                              individuals or small groups.
+
+                  2. Medium severity:
+
+                       Grievances involving environmental or social impacts, real or perceived, with
+                       short to medium-term effects on groups of individuals, broader livelihood
+                       activities, or community resources. Examples include (non-exhaustive):
+
+                        · Interference with the activities of groups of fishermen or farmers that
+                              was not foreseen or compensated.
+
+                        · Localized environmental disturbances that affect multiple
+                              households or community members.
+
+This document is the property of Oando. All rights reserved.                                          15
+OPI| Handling Stakeholders Grievances
+
+                      3. High severity:
+
+                           Grievances involving actual or potential significant adverse impacts on
+                           individuals, groups, or communities, especially those relating to
+                           safety, wellbeing, rights, or serious disruptions to community life. This
+                           category includes (non-exhaustive):
+
+                           Human Rights-Related Grievances:
+                           Cases involving violence, threats, intimidation, harassment,
+                           aggression, or other serious harm to individuals or groups within host
+                           communities, directly or indirectly linked to company activities or those
+                           of contractors or security personnel. Examples include:
+
+                        · Complaints involving threats to life, physical assault, coercion,
+                             arbitrary detention, intimidation, or the use of force by any party
+                             associated with OERNL operations, including contractors or security
+                             personnel (public or private).
+
+                        · Complaints related to acts that cause, or may cause, physical,
+                             psychological, sexual, or economic harm to women or girls in the
+                             community, including threats, coercion, exploitation, or deprivation of
+                             liberty in either public or private settings.
+
+             6.4 Local Stakeholder Analysis and Prioritization
+
+             The identification and prioritization of stakeholders involve gathering relevant
+             information about each stakeholder or stakeholder group, including their status
+             within the area, their level of influence or potential impact on OERNL operations,
+             and their perceived understanding of the Company's current or planned
+             activities.
+
+             Following identification, each stakeholder is assessed based on two key criteria:
+
+                        · Disposition: The stakeholder's attitude toward OERNL's operations and
+                             objectives.
+
+                        · Relevance (Power/Influence): The stakeholder's ability to influence
+                             operational or strategic outcomes.
+
+This document is the property of Oando. All rights reserved.                                          16
+OPI| Handling Stakeholders Grievances
+
+             The following simple, qualitative description are used to assess disposition and
+             power/influence:
+             Assessment of Disposition
+
+             Disposition reflects the stakeholder's general attitude towards the Company and may
+             be assessed using the following qualitative scale:
+
+                        · Positive: stakeholders with constructive attitude towards the Company
+                             and its operations.
+
+                        · Moderately positive: stakeholders with averagely constructive attitude.
+                        · Neutral: indifferent.
+                        · Moderately negative: stakeholders are averagely hostile towards the
+
+                             Company and its operations.
+                        · Negative: stakeholders with hostile attitude towards the Company and its
+
+                             operations.
+
+             Assessment of Relevance (Power/Influence)
+
+             Relevance measures the stakeholder's ability to influence Company activities or
+             decisions and is assessed on a scale from low (1­2) to high (5­6):
+
+             High (5­6): Stakeholders with significant influence over the Company's license
+             to operate or substantial authority in decision-making, including regulatory
+             authorities, national institutions, natural rulers, youth bodies, and community
+             development committees.
+
+             Medium (3­4): Stakeholder groups or representatives who can influence
+             strategic decision-making (e.g., community associations) or individuals/small
+             groups with influence over operational decisions (e.g., women's groups).
+
+             Low (1­2): Stakeholders with limited or no capacity to influence Company
+             decisions (e.g., communities outside OERNL operational areas).
+
+            Stakeholder disposition and relevance may evolve over time. Therefore, the
+            stakeholder analysis shall be reviewed and updated regularly to ensure it reflects
+            current realities and engagement needs.
+
+This document is the property of Oando. All rights reserved.                                        17
+OPI| Handling Stakeholders Grievances
+
+             6.5 Critical, Strategic, Intermediate and Marginal Stakeholders
+
+                         Local stakeholders are categorized into four (4) groups based on their
+                         Relevance (Power/Influence) and Disposition toward OERNL operations. These
+                         categories support informed planning, prioritization, and targeted engagement.
+
+                  1. Critical Stakeholders:
+
+                       Stakeholders with high Relevance ( 4) and a negative Disposition
+                       toward OERNL's activities or projects. These stakeholders require
+                       priority, proactive, and frequent engagement to address concerns,
+                       reduce potential risks, and gradually shift their disposition to a less critical
+                       position. Their influence makes timely engagement essential to
+                       preventing operational or reputational challenges.
+
+                  2. Strategic Stakeholders
+
+                       Stakeholders with high Relevance ( 4) and a non-negative Disposition
+                       toward OERNL. These stakeholders must be closely monitored and
+                       regularly consulted to ensure they remain informed of OERNL's projects,
+                       initiatives, and decisions.
+                       Failure to adequately address their requests or concerns could shift their
+                       attitude negatively, creating operational or reputational risks.
+                       Strong relationships with this group are essential, as they can support
+                       development opportunities and help facilitate engagement with other
+                       stakeholders.
+
+                  3. Intermediate Stakeholders
+                      Stakeholders with Relevance between 3 and < 4, regardless of
+                      Disposition.
+
+                      These stakeholders should be periodically monitored and engaged, as
+                      both their influence and disposition can change over time, potentially
+                      moving them into either the Strategic or Critical categories.
+
+                  4. Marginal Stakeholders
+
+                      Stakeholders with low Relevance (< 3), irrespective of their Disposition.
+                      While they have limited influence over OERNL's decision-making, their
+                      perceptions should be reviewed annually to assess any changes in
+                      influence, networks, or community dynamics.
+                      Engagement with this group may occur as needed, but they generally do
+                      not require priority attention.
+
+This document is the property of Oando. All rights reserved.                                             18
+OPI| Handling Stakeholders Grievances
+
+             6.6 Grievance Mechanism Process Steps
+                                                          Receive & Register
+                                                             Acknowledge
+                                                          Assess & Assign
+                                                               Investigate
+                                                                Respond
+
+          Complaint resolved                                                  Consider recourse
+                                                                                    or appeal
+
+                              Follow-Up & Close
+
+Figure 1
+
+This document is the property of Oando. All rights reserved.                                     19
+OPI| Handling Stakeholders Grievances
+
+FUNCTION PHASECODE                                                     PHASE TITLE
+                 ACTION CODE                                     ACTION DESCRIPTION
+                                       Receive & Register
+ Grievance       1
+Officer (GO)   (1.1)                      Capture grievances regardless of channel of receipt
+
+               (1.2)                      Register and log all grievances in the Grievance Register.
+
+                                          Document all information needed to enable a proper
+                                             assessment and resolution.
+
+                                        Acknowledge
+
+                                          Acknowledge receipt of the grievance (email, stamped
+                                             copy, verbal confirmation during engagement).
+
+                                          Inform the complainant that the grievance has been
+                                             formally registered.
+
+                                          Where the complainant is unavailable, acknowledgment is
+                                             communicated during subsequent engagement.
+
+      GO /       2                     Assess & Assign
+  Grievance    (2.1)
+Coordinator /                               Assess grievance to determine nature, severity, and
+  Grievance                                     handling pathway.
+
+    Owner                                   Lead review of the complaint and consult Action
+                                                Departments as required.
+
+                                            Where the grievance cannot be resolved immediately,
+                                                the Grievance Owner forwards it to the appropriate
+                                                Action Department for further investigation.
+
+                                            Ensure clear expectations for response and feedback.
+
+                                       ***If a grievance relates to the conduct of OERNL
+                                       personnel or third parties that violates any law, regulation,
+                                       or internal Company policy, or that may cause harm or
+                                       reputational risk to OERNL, including potential breaches of
+                                       the Internal Control System or the Code of Ethics, the
+                                       grievance shall be promptly escalated to the GMD, or
+                                       through the appropriate reporting channels, in accordance
+                                       with established procedures.
+
+This document is the property of Oando. All rights reserved.                                          20
+OPI| Handling Stakeholders Grievances
+
+    Action        3                    Investigate
+Department/     (3.1)
+                                            Verify facts, determine causes, and identify corrective
+ Grievance      (3.2)                           actions.
+ Owner/ GC
+                                            Submit findings to XMD and notify GC.
+ Grievance
+    Owner                              Investigation Follow-Up
+
+ Grievance      (3.3)                       Issue formal reminder if no response from Action
+Owner / GC /                                    Department within reasonable time.
+
+     XMD                               Escalation (Non-Response)
+
+    Action      (3.4)                       Escalate to XMD if Action Department remains
+Department /    (3.5)                           unresponsive.
+                (3.6)
+      XMD       (3.7)                       GC escalates to higher management if still unresolved.
+
+ GC / XMD /                            Review & Approval
+     GMD /
+                                            SXD senior management reviews and approves
+   Relevant                                     proposed resolution before communication to
+   Manager                                      complainant.
+
+District Legal                         Grievance Response Committee (GRC)
+     (DLG)
+                                            For complex/critical matters, GRC reviews case and
+       GC                                       determines Company response.
+
+Grievance       (3.8)                  Legal Review
+  Owner
+                                            DLG reviews grievances with legal implications and all
+                                                formal written responses.
+
+                                       Documentation of Extended Cases
+
+                                            Document circumstances for cases requiring prolonged
+                                                resolution.
+
+                                       Engagement During Investigation
+
+                                            Maintain communication with complainants and
+                                                document updates in Feedback Register and MoM.
+
+This document is the property of Oando. All rights reserved.                                         21
+OPI| Handling Stakeholders Grievances
+
+Grievance       4                      Prepare Response
+Owner / GC /  (4.1)                         Document findings and integrate them into decision-
+CRO                                             making.
+
+CRO /         (4.2)                    Engage Complainant
+Grievance                                   Verbally communicate investigation outcome.
+Owner                                       Issue formal written response.
+
+OERNL         (4.3)                    Resolution Levels
+(GO/CRO/XM                                  First-Level: Resolved directly between Company and
+D/GMD)                                          complainant.
+                                            Second-Level: Complainant may seek external redress
+Grievance     (4.4)                             if unresolved.
+Owner / GMD
+/ GRC                                  Escalate Unresolved Issues
+                                            GO seeks additional mandate from GMD.
+Grievance     (4.5)
+Owner         (4.6)                    ***If needed, escalate to GRC for final review.
+
+Grievance                              Discuss Proposed Resolution
+Owner                                       Engage complainants in line with international best
+                                                practice.
+Grievance     (4.7)
+Owner                                  Resolution Agreement
+                                            Obtain complainant's signature on Resolution Form
+                                                when agreement is reached.
+
+                                       Documentation
+                                            Archive all records, agreements, and MoM.
+
+This document is the property of Oando. All rights reserved.                                     22
+OPI| Handling Stakeholders Grievances
+
+Grievance   5 (5.1) ­ (5.3)            Recourse to GRC
+Owner / GC
+                                            Where unresolved, escalate to GRC.
+Grievance
+Owner / GC                                  GRC may establish joint Company­community review
+                                                committee.
+
+            6 (6.1)                    Follow-Up
+                                            Implement agreed corrective actions.
+
+Grievance   (6.2)                      Close-Out
+Owner / GC  (6.3)                      *** A grievance is closed when:
+
+Grievance                                   Complainant signs off after completion of agreed
+Owner                                           actions.
+
+                                            Complainant opts for external redress.
+                                            Case is classified as Abandoned.
+
+                                       Closure Documentation
+                                            Mark abandoned cases as "Abandoned" in the
+                                                Register.
+                                            Conduct post-resolution evaluation.
+                                            Document all results and store appropriately.
+
+This document is the property of Oando. All rights reserved.                                  23
+OPI| Handling Stakeholders Grievances
+
+  6.7 Roles and Responsibilities
+
+    6.7.1 Grievance Coordinator
+
+The Grievance Coordinator is responsible for the overall coordination and oversight
+of the grievance mechanism. Key responsibilities include:
+
+             · Managing the grievance database and ensuring the integrity of all
+                  records.
+
+             · Serving as the primary focal point for coordination between relevant
+                  departments.
+
+             · Ensuring that resolution actions are completed and that grievance
+                  handling remains effective and consistent.
+
+             · Leading the internal grievance working group and liaising with senior
+                  management as necessary.
+
+             · Tracking, analyzing, and reporting grievance trends and performance
+                  indicators.
+
+             · Monitoring the progress of individual grievances to ensure timely
+                  closure.
+
+             · Providing monthly and quarterly grievance data summaries to the
+                  XMD.
+
+    6.7.2 Community Investment and Sustainability Relations
+
+This function is responsible for ensuring alignment of the grievance mechanism with
+sustainability standards and best practice. Responsibilities include:
+
+             · Identifying opportunities for improvement and supporting periodic
+                  review and update of this Operating Instruction.
+
+             · Ensuring the overall integrity and credibility of the grievance
+                  management system.
+
+             · Ensuring that the mechanism is consistent with international best
+                  practice and effectively communicated to internal stakeholders.
+
+             · Monitoring compliance with the grievance process across all
+                  operational areas.
+
+             · Providing grievance data summaries and analysis when required.
+
+This document is the property of Oando. All rights reserved.                          24
+OPI| Handling Stakeholders Grievances
+
+    6.7.3 General Manager, District Management (GMD)
+
+GMD provides senior-level oversight to ensure the effectiveness and credibility of the
+grievance mechanism. Key responsibilities include:
+
+             · Approving this grievance procedure and subsequent revisions.
+             · Ensuring appropriate attention is given to thorough investigation and
+
+                  resolution of grievances.
+             · Managing decision-making processes for grievances involving third
+
+                  parties that may materially impact Company reputation or require legal
+                  review.
+
+6.7.4  Stakeholders Management & Community Development Division
+       Manager (XMD)
+
+The XMD is responsible for oversight, resourcing, and quality assurance of the
+grievance mechanism. Responsibilities include:
+
+       · Ensuring all complaints are routed and coordinated through the
+           designated Grievance Owner.
+
+       · Providing adequate resources (personnel, systems, procedures, budget)
+           for effective grievance management.
+
+       · Assigning complaints to the appropriate Grievance Owner and ensuring
+           periodic reporting.
+
+       · Ensuring that investigations are completed within expected timeframes.
+
+       · Reviewing and endorsing proposed grievance resolutions.
+
+       · Supporting monitoring and evaluation of the grievance mechanism.
+
+       · Ensuring that internal and external reporting requirements are met.
+
+       · Ensuring relevant personnel receive adequate training to perform
+           assigned responsibilities.
+
+    6.7.5 Grievance Owner (XM, LNM, HSE)
+
+The Grievance Owner leads the investigation and resolution process for assigned
+grievances. Responsibilities include:
+
+             · Investigating and assigning grievances as appropriate.
+             · Consulting relevant Action Departments and technical personnel.
+             · Defining and implementing resolution measures.
+             · Securing necessary approvals from the XMD and providing required
+
+                  reports.
+
+This document is the property of Oando. All rights reserved.                              25
+OPI| Handling Stakeholders Grievances
+
+                        · Defining levels of authority for CROs in resolving grievances.
+                        · Ensuring that all assigned resolution actions are completed.
+
+               6.7.6 Community Relations Officer (CRO)
+
+          The CRO serves as the primary interface with stakeholders and supports day-to-
+          day grievance handling. Responsibilities include:
+
+                        · Receiving and documenting grievances submitted by stakeholders.
+                        · Following up on the progress of individual grievances.
+                        · Recording decisions made during the grievance resolution process
+
+                             to support evaluation.
+                        · Consolidating and communicating feedback to complainants.
+                        · Maintaining the grievance database on behalf of the Grievance
+
+                             Owner.
+                        · Providing weekly updates to the Grievance Coordinator through the
+
+                             designated District Focal Point.
+
+               6.7.7 Grievance Officers
+
+          Grievance Officers support the administrative and analytical functions of the grievance
+          system. Responsibilities include:
+
+                        a. Ensuring grievances are accurately classified in the database.
+                        b. Managing database entries and coordinating responses.
+                        c. Analyzing and evaluating grievance data reported by the Grievance
+
+                             Owner.
+                        d. Tracking and reporting grievance status and trends.
+
+This document is the property of Oando. All rights reserved.                                       26
+OPI| Handling Stakeholders Grievances
+
+             6.8 Monitoring and Reporting
+
+          Monitoring compliance with this Procedure and reporting on grievance-related activities
+          form part of the Company's annual continuous improvement process. This ensures the
+          responsiveness, integrity, and overall effectiveness of the grievance mechanism.
+
+          On a quarterly basis, Management shall undertake a structured review focused on the
+          following:
+
+                        · The extent to which the Local Stakeholders Grievance Mechanism is
+                             being implemented as designed.
+
+                        · Verification that grievances are being correctly classified according to
+                             defined categories and severity levels.
+
+                        · Review of data and key performance indicators, including:
+                                 a. Total number of grievances received, classified by level and type.
+                                 b. Number of open grievances, classified by level and type.
+                                 c. Total number of resolved grievances, classified by level and type.
+                                 d. Number of grievances resolved through rapid response.
+                                 e. Identification of recurring or systemic grievances associated with
+                                      specific departments or operational areas.
+
+                         · Trend analysis to determine whether grievances are concentrated around
+                             particular issues, locations, or incidents.
+
+                         · Recommendations for corrective and preventive measures to address any
+                             deficiencies identified during the review.
+
+               6.8.1 Periodic Review of the Grievance Mechanism
+
+          The Handling Community Grievance Mechanism shall be formally reviewed every four
+          (4) years as part of the broader Sustainability Management System review, in alignment
+          with the requirements of the Upstream and Central Sustainability Functions. The review
+          may be triggered or informed by:
+
+                        · Trends and changes observed in key performance indicators.
+                        · Findings from internal audits conducted to assess the effectiveness and
+
+                             efficiency of the mechanism.
+                        · Feedback obtained through stakeholder engagement processes or from
+
+                             the practical handling of grievances, particularly with respect to:
+                                 a. Stakeholder awareness of the grievance mechanism.
+                                 b. Levels of trust and confidence in the mechanism.
+                                 c. Suggestions or opportunities for improvement.
+
+This document is the property of Oando. All rights reserved.                                            27
+OPI| Handling Stakeholders Grievances
+
+The table below details the monitoring, control, and reporting activities required under
+this OPI as well as the functions accountable for their implementation
+
+FUNCTION                               DEPARTMENT MONITORING, CONTROL AND
+                                                              REPORTINGACTIVITIES
+
+Community                              SXD                    · Coordinates and submits weekly
+                                                                  grievance updates to the Grievance
+Relations Officer                                                 Coordinator.
+
+(CRO)
+
+                                                              · Prepares      and communicates
+                                                                  quarterly    grievance reports,
+                                                                  including  analyses and trend
+                                                                  reviews.
+Grievance                              SXD
+Coordinator
+                                                              · Submit reports to the XMD for review
+                                                                  and oversight.
+
+                                                              · Supports annual review meetings
+                                                                  and recommends new measures
+                                                                  where required.
+
+XMD, XMM,                              SXD                    · Convenes emergency meetings for
+Lands Manager,                                                    critical or high-risk grievance issues.
+
+CSS                                                           · Conduct annual review of the
+                                                                  Grievance Mechanism process to
+                                                                  ensure alignment with operational
+                                                                  realities, regulatory expectations,
+                                                                  and best practices.
+
+The Community Investment & Sustainability Relations Department shall submit
+monthly and quarterly reports on the status of grievances to the GMD through
+the Stakeholders Management & Community Development Division Manager
+(XMD), in accordance with this Procedure.
+
+A grievance that triggers significant concern among key stakeholders shall be
+escalated immediately to the GMD through the XMD for prompt attention.
+
+The CRM or LNM, in collaboration with the XMD, shall provide feedback to
+stakeholders on activities carried out under the Local Stakeholders Grievance
+Mechanism and the outcomes achieved. This quarterly feedback shall be
+communicated through newsletters, stakeholder meetings, and other established
+engagement channels.
+
+This document is the property of Oando. All rights reserved.                                               28
+OPI| Handling Stakeholders Grievances
+
+  7. Document Storage & Traceability
+
+              All units and positions involved in this Procedure shall ensure full traceability of data and
+              information and shall keep and properly file all printed and electronic documents, such
+              as submissions, correspondence, investigation records, and closure reports, to maintain
+              a complete audit trail for all process phases.
+
+This document is the property of Oando. All rights reserved.                                                 29
+OPI| Handling Stakeholders Grievances
+
+  8. Document Updating
+
+              All units and positions involved in the activities described in this document are
+              responsible for identifying and reporting any events or developments that may affect the
+              Company's operations and necessitate an update to this Procedure. Such events shall
+              be communicated to the Community Investment & Sustainability Relations Department
+              and the Organisation Department, which are responsible for coordinating and
+              implementing revisions to this document.
+
+This document is the property of Oando. All rights reserved.                                            30
+OPI| Handling Stakeholders Grievances
+
+9. List of Annexes
+
+A.3 Grievance Register [FOR OFFICIAL PURPOSES ONLY]
+
+                                                   Initiator                                                                          Registering Officer                        Investigating Unit                                                              Outcome
+
+Serial  Remove      Nature of Complaint  Category  Impact Name of        State LGA  Stakeholde  Date of Attached         Name of Date of Medium of         Remarks  Responsible  Responsible Person  Action to be done  Duration  Resolved  Rapid     Abandoned  Date of     Litigation On-going Pending
+ No.    not in use                                 Location Complainant             r           complaint Documentation  Registering                                Department                                                              Response             Resolution
+                                                                                                                            Officer   Receipt  Receipt
+
+                    Encroachment
+                    Flooding
+                    Blasting (noise,
+                    vibration,
+                    Soil erosion
+                    Oil spill
+                    Access road
+                    Land acquisition
+                    Material transportation and use
+                    of
+                    Water pollution
+                    Gas flaring
+                    MoUs
+                    Property damage
+                    (farmland,
+
+This document is the property of Oando. All rights reserved.                                                                                                                                                                                                                                              31
+OPI| Handling Stakeholders Grievances
+
+ A.4 Satisfaction Survey Form- Not in use to be remove
+
+This document is the property of Oando. All rights reserved.  32
+OPI| Handling Stakeholders Grievances
+
+ FORMAT B. INVESTIGATION FORM-Not in use to be remove
+
+This document is the property of Oando. All rights reserved.  33
+OPI| Handling Stakeholders Grievances
+
+ Resolution and Close-out Form-Not in use to be remove
+
+This document is the property of Oando. All rights reserved.  34
+

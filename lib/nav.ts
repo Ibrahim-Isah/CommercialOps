@@ -10,6 +10,9 @@ import {
   Building2,
   FolderKanban,
   Users,
+  ClipboardList,
+  MessageSquareWarning,
+  Activity,
   type LucideIcon,
 } from "lucide-react";
 
@@ -70,6 +73,25 @@ export const NAV_ITEMS: NavEntry[] = [
         href: "/supply-chain/projects",
         icon: FolderKanban,
         description: "Procurement projects",
+      },
+    ],
+  },
+  {
+    label: "Grievances",
+    icon: MessageSquareWarning,
+    description: "Local stakeholder grievance mechanism (OPI SXD 001/OERNL r01)",
+    children: [
+      {
+        label: "Grievance Register",
+        href: "/grievances",
+        icon: ClipboardList,
+        description: "Receive, track and resolve grievances end-to-end",
+      },
+      {
+        label: "Monitoring & Reporting",
+        href: "/grievances/analytics",
+        icon: Activity,
+        description: "Quarterly review KPIs and trends",
       },
     ],
   },
